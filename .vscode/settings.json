@@ -1,0 +1,58 @@
+{
+  // Auto fix with ESLint on save
+  "editor.codeActionsOnSave": [
+    "source.addMissingImports",
+    "source.fixAll.eslint"
+  ],
+  "editor.detectIndentation": false,
+  "editor.formatOnSave": false,
+  "editor.tabSize": 2,
+  // Enable eslint for all supported languages
+  "eslint.format.enable": true,
+  "eslint.validate": [
+    "astro",
+    "css",
+    "github-actions-workflow",
+    "gql",
+    "graphql",
+    "html",
+    "javascript",
+    "javascriptreact",
+    "json",
+    "jsonc",
+    "less",
+    "markdown",
+    "pcss",
+    "postcss",
+    "scss",
+    "toml",
+    "typescript",
+    "typescriptreact",
+    "vue",
+    "xml",
+    "yaml"
+  ],
+  "i18n-ally.keystyle": "nested",
+  // I18n
+  "i18n-ally.localesPaths": [
+    "src/locales"
+  ],
+  // Disable the default formatter, use ESLint instead
+  "prettier.enable": false,
+  "search.exclude": {
+    "package-lock.json": true
+  },
+  // Vitest
+  "testing.automaticallyOpenTestResults": "neverOpen", // Don't open the test results automatically
+  "typescript.enablePromptUseWorkspaceTsdk": true, // For security reasons it's require that users opt into using the workspace version of typescript
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    // useRouter should be imported from `next/navigation` instead of `next/router`
+    "lucide-react",
+    "next/dist/client/router.d.ts",
+    // give priority for Link to next/link instead of lucide-react
+    "next/router.d.ts"
+  ],
+  "typescript.preferences.preferTypeOnlyAutoImports": true, // Prefer type-only imports
+  // TypeScript
+  "typescript.tsdk": "node_modules/typescript/lib" // Use the workspace version of TypeScript
+}
