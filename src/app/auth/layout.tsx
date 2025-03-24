@@ -43,7 +43,7 @@ export default function AuthLayout({
           {' '}
           {new Date().getFullYear()}
           {' '}
-          Fine Foods. All rights reserved.
+          BFarmX. All rights reserved.
         </div>
       </div>
 
@@ -53,7 +53,7 @@ export default function AuthLayout({
         <div className="md:hidden p-4">
           <Image
             src="/logo.png"
-            alt="Fine Foods Logo"
+            alt="BFarmX Logo"
             width={120}
             height={32}
             priority
