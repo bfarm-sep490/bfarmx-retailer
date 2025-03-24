@@ -12,7 +12,7 @@ jobs:
   release:
     strategy:
       matrix:
-        node-version: [20.x]
+        bun-version: [latest]
 
     name: Create a new release
     runs-on: ubuntu-latest
@@ -26,14 +26,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - name: Use Bun
+        uses: oven-sh/setup-bun@v1
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: npm
-      - run: HUSKY=0 npm ci
+          bun-version: ${{ matrix.bun-version }}
+      - run: HUSKY=0 bun install
 
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+        run: bunx semantic-release
