@@ -4,12 +4,12 @@ import type { PropsWithChildren } from 'react';
 import type { BasketOrder, Product } from '../types';
 import { OrdersModalContextProvider } from '@/context';
 import { useMany } from '@refinedev/core';
-import { createContext, useReducer } from 'react';
+import { createContext, useMemo, useReducer } from 'react';
 
 export const BasketContext = createContext<{
   orders: BasketOrder[];
   findOrderByProductId: (productId: number) => BasketOrder | undefined;
-  dispatch: (action: { type: string; payload: BasketOrder }) => void;
+  dispatch: (action: { type: string; payload?: BasketOrder }) => void;
   totalPrice: number;
   products: Product[];
 }>({
@@ -25,17 +25,20 @@ const initialBasket: BasketOrder[] = [];
 const basketReducer = (
   state: BasketOrder[],
   action: {
-    payload: BasketOrder;
+    payload?: BasketOrder;
     type: string;
   },
 ): BasketOrder[] => {
   switch (action.type) {
     case 'addProduct': {
-      const currentOrder = state.find(order => order.productId === action.payload.productId);
+      if (!action.payload) {
+        return state;
+      }
+      const currentOrder = state.find(order => order.productId === action.payload?.productId);
 
       if (currentOrder) {
         return state.map(order =>
-          order.productId === action.payload.productId
+          order.productId === action.payload?.productId
             ? { ...order, amount: order.amount + 1 }
             : order,
         );
@@ -45,34 +48,43 @@ const basketReducer = (
     }
 
     case 'incrementProductAmount':
+      if (!action.payload) {
+        return state;
+      }
       return state.map((order) => {
-        return order.productId === action.payload.productId
+        return order.productId === action.payload?.productId
           ? { ...order, amount: order.amount + 1 }
           : order;
       });
     case 'decrementProductAmount': {
-      const currentOrder = state.find(order => order.productId === action.payload.productId);
+      if (!action.payload) {
+        return state;
+      }
+      const currentOrder = state.find(order => order.productId === action.payload?.productId);
       if (!currentOrder) {
         return state;
       }
 
       if (currentOrder.amount === 1) {
-        return state.filter(order => order.productId !== action.payload.productId);
+        return state.filter(order => order.productId !== action.payload?.productId);
       }
 
       return state.map(order =>
-        order.productId === action.payload.productId
+        order.productId === action.payload?.productId
           ? { ...order, amount: order.amount - 1 }
           : order,
       );
     }
     case 'setProductAmount': {
+      if (!action.payload) {
+        return state;
+      }
       if (action.payload.amount <= 0) {
-        return state.filter(order => order.productId !== action.payload.productId);
+        return state.filter(order => order.productId !== action.payload?.productId);
       }
 
       return state.map(order =>
-        order.productId === action.payload.productId
+        order.productId === action.payload?.productId
           ? { ...order, amount: action.payload.amount }
           : order,
       );
@@ -110,17 +122,20 @@ export const BasketContextProvider: React.FC<PropsWithChildren> = ({ children })
     return orders.find(order => order.productId === productId);
   };
 
+  const contextValue = useMemo(
+    () => ({
+      orders,
+      findOrderByProductId,
+      dispatch,
+      totalPrice,
+      products: productsData?.data ?? [],
+    }),
+    [orders, totalPrice, productsData?.data],
+  );
+
   return (
-    <BasketContext
-      value={{
-        orders,
-        findOrderByProductId,
-        dispatch,
-        totalPrice,
-        products: productsData?.data ?? [],
-      }}
-    >
+    <BasketContext.Provider value={contextValue}>
       <OrdersModalContextProvider>{children}</OrdersModalContextProvider>
-    </BasketContext>
+    </BasketContext.Provider>
   );
 };

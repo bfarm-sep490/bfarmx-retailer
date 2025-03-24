@@ -103,7 +103,7 @@ export const OrderDetail: React.FC<OrderPageProps> = ({ useShowProps }) => {
             </div>
             <img
               className="h-32 w-32 rounded-full"
-              src={order.courier.avatar[0].url}
+              src={order.courier.avatar?.[0]?.url ?? ''}
               alt={order.courier.name}
             />
           </div>

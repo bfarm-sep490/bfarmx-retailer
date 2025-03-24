@@ -1,4 +1,4 @@
 import { API_URL } from '@/constants';
-import dataProviderSimpleRest from '@refinedev/simple-rest';
+import { dataProviderRest } from '@/rest-data-provider';
 
-export const dataProvider = dataProviderSimpleRest(API_URL);
+export const dataProvider = dataProviderRest(API_URL);

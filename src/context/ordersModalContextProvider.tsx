@@ -1,7 +1,7 @@
 'use client';
 
 import type { PropsWithChildren } from 'react';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 export const OrdersModalContext = React.createContext<{
   ordersModalVisible: boolean;
@@ -16,9 +16,17 @@ export const OrdersModalContextProvider: React.FC<PropsWithChildren> = ({
 }) => {
   const [ordersModalVisible, setOrdersModalVisible] = useState(false);
 
+  const contextValue = useMemo(
+    () => ({
+      ordersModalVisible,
+      setOrdersModalVisible,
+    }),
+    [ordersModalVisible],
+  );
+
   return (
-    <OrdersModalContext value={{ ordersModalVisible, setOrdersModalVisible }}>
+    <OrdersModalContext.Provider value={contextValue}>
       {children}
-    </OrdersModalContext>
+    </OrdersModalContext.Provider>
   );
 };

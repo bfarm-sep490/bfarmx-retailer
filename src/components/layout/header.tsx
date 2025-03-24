@@ -1,13 +1,13 @@
 'use client';
 
 import type React from 'react';
-import { BasketIcon, FinefoodsIcon } from '@/components/icons';
 import { useBasketContext } from '@/hooks/useBasketContext';
-import { useOrdesModalContext } from '@/hooks/useOrdersModalContext';
+import { useOrdersModalContext } from '@/hooks/useOrdersModalContext';
 import Link from 'next/link';
+import { BasketIcon, BFarmXIcon } from '../../components/icons';
 
 export const Header: React.FC = () => {
-  const { setOrdersModalVisible } = useOrdesModalContext();
+  const { setOrdersModalVisible } = useOrdersModalContext();
   const { orders, totalPrice } = useBasketContext();
   const isBasketHaveOrders = orders.length > 0;
 
@@ -15,7 +15,7 @@ export const Header: React.FC = () => {
     <header className="bg-primary sticky top-0 z-50 shadow-lg">
       <div className="container flex h-full items-center justify-between px-2 md:px-0">
         <Link href="/" className="flex gap-4">
-          <FinefoodsIcon className="text-white" />
+          <BFarmXIcon className="text-white" />
         </Link>
         <button
           type="button"

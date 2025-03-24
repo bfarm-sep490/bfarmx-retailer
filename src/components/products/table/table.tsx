@@ -39,7 +39,7 @@ const OrderAmountInput = ({ productId }: { productId: number }) => {
           onClick={() =>
             dispatch({
               type: 'decrementProductAmount',
-              payload: { productId },
+              payload: { productId, amount: 1 },
             })}
         >
           <ChevronDownIcon className="text-primary h-4 w-4" />
@@ -72,7 +72,7 @@ const OrderAmountInput = ({ productId }: { productId: number }) => {
           onClick={() =>
             dispatch({
               type: 'incrementProductAmount',
-              payload: { productId },
+              payload: { productId, amount: 1 },
             })}
         >
           <ChevronUpIcon className="text-primary h-4 w-4" />

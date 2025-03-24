@@ -3,14 +3,14 @@ import type { Order } from '@/types';
 import { CloseIcon, OrderIcon } from '@/components/icons';
 import { useBasketContext } from '@/hooks/useBasketContext';
 import { useOnClickOutside } from '@/hooks/useOnClickOutside';
-import { useOrdesModalContext } from '@/hooks/useOrdersModalContext';
+import { useOrdersModalContext } from '@/hooks/useOrdersModalContext';
 import { useCreate, useGo } from '@refinedev/core';
 import { useRef } from 'react';
 
 export const OrdersModal: React.FC = () => {
   const ref = useRef(null);
   const go = useGo();
-  const { setOrdersModalVisible } = useOrdesModalContext();
+  const { setOrdersModalVisible } = useOrdersModalContext();
   const { orders, totalPrice, products, dispatch } = useBasketContext();
   const { mutate } = useCreate<Order>({
     resource: 'orders',
@@ -70,7 +70,7 @@ export const OrdersModal: React.FC = () => {
                           <div className="flex items-center gap-2">
                             <img
                               className="h-12 w-12 rounded-full object-cover object-center"
-                              src={product?.images[0].url}
+                              src={product?.images?.[0]?.url ?? ''}
                               alt={product?.name}
                             />
                             <p>{product?.name}</p>
