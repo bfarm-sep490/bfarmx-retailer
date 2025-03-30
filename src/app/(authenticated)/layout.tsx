@@ -8,7 +8,7 @@ import { useOrdersModalContext } from '@/hooks/useOrdersModalContext';
 import { Authenticated } from '@refinedev/core';
 import React from 'react';
 
-export const Layout: React.FC<LayoutProps> = ({ children }) => {
+export default function Layout({ children }: LayoutProps) {
   const { ordersModalVisible } = useOrdersModalContext();
 
   return (

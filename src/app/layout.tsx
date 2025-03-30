@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import { Layout } from '@/components/layout';
 import { BasketContextProvider } from '@/context';
 import { authProviderClient } from '@/providers/auth-provider/auth-provider.client';
 import { dataProvider } from '@/providers/data-provider/client';
@@ -41,7 +40,6 @@ export default function RootLayout({
               ]}
               routerProvider={routerProvider}
               dataProvider={dataProvider}
-
               authProvider={authProviderClient}
               options={{
                 syncWithLocation: true,
@@ -50,7 +48,7 @@ export default function RootLayout({
               }}
             >
               <BasketContextProvider>
-                <Layout>{children}</Layout>
+                {children}
               </BasketContextProvider>
               <RefineKbar />
             </Refine>

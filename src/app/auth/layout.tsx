@@ -7,9 +7,7 @@ export const metadata: Metadata = {
   description: 'Bfarmx authentication pages',
 };
 
-export default function AuthLayout({
-  children,
-}: PropsWithChildren) {
+export default function AuthLayout({ children }: PropsWithChildren) {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Phần banner bên trái - ẩn trên mobile */}
