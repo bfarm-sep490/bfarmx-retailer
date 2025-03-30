@@ -9,7 +9,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import {
   useActiveAuthProvider,
   useLink,
@@ -114,82 +113,71 @@ export const LoginPage: React.FC<LoginProps> = ({
       <CardContent>
         {renderProviders()}
         {!hideForm && (
-          <>
-            <div className="relative my-4">
-              <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Hoặc tiếp tục với
-                </span>
-              </div>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              login({ ...mutationVariables, email, password, remember });
+            }}
+            className="space-y-4"
+            {...formProps}
+          >
+            <div className="space-y-2">
+              <Label htmlFor="email-input">
+                {translate('pages.login.fields.email', 'Email')}
+              </Label>
+              <Input
+                id="email-input"
+                name="email"
+                type="email"
+                placeholder="name@example.com"
+                autoCorrect="off"
+                spellCheck={false}
+                autoCapitalize="off"
+                required
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+              />
             </div>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                login({ ...mutationVariables, email, password, remember });
-              }}
-              className="space-y-4"
-              {...formProps}
-            >
-              <div className="space-y-2">
-                <Label htmlFor="email-input">
-                  {translate('pages.login.fields.email', 'Email')}
-                </Label>
-                <Input
-                  id="email-input"
-                  name="email"
-                  type="email"
-                  placeholder="name@example.com"
-                  autoCorrect="off"
-                  spellCheck={false}
-                  autoCapitalize="off"
-                  required
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password-input">
-                  {translate('pages.login.fields.password', 'Mật khẩu')}
-                </Label>
-                <Input
-                  id="password-input"
-                  type="password"
-                  name="password"
-                  required
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                {rememberMe ?? (
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="remember-me-input"
-                      checked={remember}
-                      onCheckedChange={() => setRemember(!remember)}
-                    />
-                    <Label htmlFor="remember-me-input">
-                      {translate('pages.login.buttons.rememberMe', 'Ghi nhớ đăng nhập')}
-                    </Label>
-                  </div>
+            <div className="space-y-2">
+              <Label htmlFor="password-input">
+                {translate('pages.login.fields.password', 'Mật khẩu')}
+              </Label>
+              <Input
+                id="password-input"
+                type="password"
+                name="password"
+                required
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              {rememberMe ?? (
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="remember-me-input"
+                    checked={remember}
+                    onCheckedChange={() => setRemember(!remember)}
+                  />
+                  <Label htmlFor="remember-me-input">
+                    {translate('pages.login.buttons.rememberMe', 'Ghi nhớ đăng nhập')}
+                  </Label>
+                </div>
+              )}
+              {forgotPasswordLink
+                ?? renderLink(
+                  '/forgot-password',
+                  translate(
+                    'pages.login.buttons.forgotPassword',
+                    'Quên mật khẩu?',
+                  ),
                 )}
-                {forgotPasswordLink
-                  ?? renderLink(
-                    '/forgot-password',
-                    translate(
-                      'pages.login.buttons.forgotPassword',
-                      'Quên mật khẩu?',
-                    ),
-                  )}
-              </div>
-              <Button type="submit" className="w-full">
-                {translate('pages.login.signin', 'Đăng nhập')}
-              </Button>
-            </form>
-          </>
+            </div>
+            <Button type="submit" className="w-full">
+              {translate('pages.login.signin', 'Đăng nhập')}
+            </Button>
+          </form>
+
         )}
       </CardContent>
       <CardFooter className="flex flex-col space-y-4">

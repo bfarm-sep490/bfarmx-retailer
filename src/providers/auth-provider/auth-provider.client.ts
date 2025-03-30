@@ -37,6 +37,9 @@ export const authProviderClient: AuthProvider = {
         expires: 30, // 30 days
         path: '/',
       });
+
+      // Chuyển hướng về trang chủ sau khi đăng nhập thành công
+      window.location.href = '/';
       return {
         success: true,
         redirectTo: '/',
