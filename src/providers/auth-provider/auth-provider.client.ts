@@ -5,34 +5,35 @@ import Cookies from 'js-cookie';
 
 const mockUsers = [
   {
-    email: 'admin@refine.dev',
-    name: 'John Doe',
+    email: 'admin@bfarmx.com',
+    password: '123456',
+    name: 'ackerman',
     avatar: 'https://i.pravatar.cc/150?img=1',
     roles: ['admin'],
-  },
-  {
-    email: 'editor@refine.dev',
-    name: 'Jane Doe',
-    avatar: 'https://i.pravatar.cc/150?img=1',
-    roles: ['editor'],
-  },
-  {
-    email: 'demo@refine.dev',
-    name: 'Jane Doe',
-    avatar: 'https://i.pravatar.cc/150?img=1',
-    roles: ['user'],
   },
 ];
 
 export const authProviderClient: AuthProvider = {
-  login: async ({ email,
-    // username, password, remember
-  }) => {
-    // Suppose we actually send a request to the back end here.
-    const user = mockUsers.find(item => item.email === email);
+  login: async ({ email, password, remember }) => {
+    const user = mockUsers.find(item => item.email === email && item.password === password);
 
     if (user) {
-      Cookies.set('auth', JSON.stringify(user), {
+      if (remember) {
+        Cookies.set('remembered_email', email, {
+          expires: 30, // 30 days
+          path: '/',
+        });
+        Cookies.set('remembered_password', password, {
+          expires: 30, // 30 days
+          path: '/',
+        });
+      } else {
+        Cookies.remove('remembered_email', { path: '/' });
+        Cookies.remove('remembered_password', { path: '/' });
+      }
+
+      const { password: _, ...userWithoutPassword } = user;
+      Cookies.set('auth', JSON.stringify(userWithoutPassword), {
         expires: 30, // 30 days
         path: '/',
       });
@@ -46,12 +47,11 @@ export const authProviderClient: AuthProvider = {
       success: false,
       error: {
         name: 'LoginError',
-        message: 'Invalid username or password',
+        message: 'Email hoặc mật khẩu không chính xác',
       },
     };
   },
   register: async (params) => {
-    // Suppose we actually send a request to the back end here.
     const user = mockUsers.find(item => item.email === params.email);
 
     if (user) {
@@ -73,11 +73,9 @@ export const authProviderClient: AuthProvider = {
     };
   },
   forgotPassword: async (params) => {
-    // Suppose we actually send a request to the back end here.
     const user = mockUsers.find(item => item.email === params.email);
 
     if (user) {
-      // we can send email with reset password link here
       return {
         success: true,
       };
@@ -91,7 +89,6 @@ export const authProviderClient: AuthProvider = {
     };
   },
   updatePassword: async (params) => {
-    // Suppose we actually send a request to the back end here.
     const isPasswordInvalid = params.password === '123456' || !params.password;
 
     if (isPasswordInvalid) {

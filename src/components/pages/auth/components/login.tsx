@@ -4,6 +4,12 @@ import type {
   LoginFormTypes,
   LoginPageProps,
 } from '@refinedev/core';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 import {
   useActiveAuthProvider,
   useLink,
@@ -12,7 +18,8 @@ import {
   useRouterType,
   useTranslate,
 } from '@refinedev/core';
-import React, { useState } from 'react';
+import Cookies from 'js-cookie';
+import React, { useEffect, useState } from 'react';
 
 type DivPropsType = React.DetailedHTMLProps<
   React.HTMLAttributes<HTMLDivElement>,
@@ -30,7 +37,6 @@ export const LoginPage: React.FC<LoginProps> = ({
   registerLink,
   forgotPasswordLink,
   rememberMe,
-  contentProps,
   wrapperProps,
   renderContent,
   formProps,
@@ -50,156 +56,158 @@ export const LoginPage: React.FC<LoginProps> = ({
 
   const translate = useTranslate();
 
+  useEffect(() => {
+    const rememberedEmail = Cookies.get('remembered_email');
+    const rememberedPassword = Cookies.get('remembered_password');
+
+    if (rememberedEmail && rememberedPassword) {
+      setEmail(rememberedEmail);
+      setPassword(rememberedPassword);
+      setRemember(true);
+    }
+  }, []);
+
   const authProvider = useActiveAuthProvider();
   const { mutate: login } = useLogin<LoginFormTypes>({
     v3LegacyAuthProviderCompatible: Boolean(authProvider?.isLegacy),
   });
 
   const renderLink = (link: string, text?: string) => {
-    return <ActiveLink to={link}>{text}</ActiveLink>;
+    return <ActiveLink to={link} className="text-sm text-primary hover:underline">{text}</ActiveLink>;
   };
 
   const renderProviders = () => {
     if (providers) {
-      return providers.map(provider => (
-        <div
-          key={provider.name}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '1rem',
-          }}
-        >
-          <button
-            onClick={() =>
-              login({
-                ...mutationVariables,
-                providerName: provider.name,
-              })}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            {provider?.icon}
-            {provider.label ?? <label>{provider.label}</label>}
-          </button>
+      return (
+        <div className="grid grid-cols-2 gap-4">
+          {providers.map(provider => (
+            <Button
+              key={provider.name}
+              variant="outline"
+              onClick={() =>
+                login({
+                  ...mutationVariables,
+                  providerName: provider.name,
+                })}
+              className="w-full"
+            >
+              {provider?.icon}
+              <span className="ml-2">{provider.label}</span>
+            </Button>
+          ))}
         </div>
-      ));
+      );
     }
     return null;
   };
 
   const content = (
-    <div {...contentProps}>
-      <h1 style={{ textAlign: 'center' }}>
-        {translate('pages.login.title', 'Sign in to your account')}
-      </h1>
-      {renderProviders()}
-      {!hideForm && (
-        <>
-          <hr />
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              login({ ...mutationVariables, email, password, remember });
-            }}
-            {...formProps}
-          >
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                padding: 25,
-              }}
-            >
-              <label htmlFor="email-input">
-                {translate('pages.login.fields.email', 'Email')}
-              </label>
-              <input
-                id="email-input"
-                name="email"
-                type="text"
-                size={20}
-                autoCorrect="off"
-                spellCheck={false}
-                autoCapitalize="off"
-                required
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-              />
-              <label htmlFor="password-input">
-                {translate('pages.login.fields.password', 'Password')}
-              </label>
-              <input
-                id="password-input"
-                type="password"
-                name="password"
-                required
-                size={20}
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-              />
-              {rememberMe ?? (
-                <>
-                  <label htmlFor="remember-me-input">
-                    {translate('pages.login.buttons.rememberMe', 'Remember me')}
-                    <input
-                      id="remember-me-input"
-                      name="remember"
-                      type="checkbox"
-                      size={20}
-                      checked={remember}
-                      value={remember.toString()}
-                      onChange={() => {
-                        setRemember(!remember);
-                      }}
-                    />
-                  </label>
-                </>
-              )}
-              <br />
-              {forgotPasswordLink
-                ?? renderLink(
-                  '/forgot-password',
-                  translate(
-                    'pages.login.buttons.forgotPassword',
-                    'Forgot password?',
-                  ),
-                )}
-              <input
-                type="submit"
-                value={translate('pages.login.signin', 'Sign in')}
-              />
-              {registerLink ?? (
-                <span>
-                  {translate(
-                    'pages.login.buttons.noAccount',
-                    'Don’t have an account?',
-                  )}
-                  {' '}
-                  {renderLink(
-                    '/register',
-                    translate('pages.login.register', 'Sign up'),
-                  )}
+    <Card className="w-full">
+      <CardHeader className="space-y-1">
+        <CardTitle className="text-2xl text-center">
+          {translate('pages.login.title', 'Đăng nhập')}
+        </CardTitle>
+        <CardDescription className="text-center">
+          Nhập email và mật khẩu của bạn để đăng nhập
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {renderProviders()}
+        {!hideForm && (
+          <>
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <Separator className="w-full" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Hoặc tiếp tục với
                 </span>
-              )}
+              </div>
             </div>
-          </form>
-        </>
-      )}
-      {registerLink !== false && hideForm && (
-        <div style={{ textAlign: 'center' }}>
-          {translate('pages.login.buttons.noAccount', 'Don’t have an account?')}
-          {' '}
-          {renderLink(
-            '/register',
-            translate('pages.login.register', 'Sign up'),
-          )}
-        </div>
-      )}
-    </div>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                login({ ...mutationVariables, email, password, remember });
+              }}
+              className="space-y-4"
+              {...formProps}
+            >
+              <div className="space-y-2">
+                <Label htmlFor="email-input">
+                  {translate('pages.login.fields.email', 'Email')}
+                </Label>
+                <Input
+                  id="email-input"
+                  name="email"
+                  type="email"
+                  placeholder="name@example.com"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  autoCapitalize="off"
+                  required
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password-input">
+                  {translate('pages.login.fields.password', 'Mật khẩu')}
+                </Label>
+                <Input
+                  id="password-input"
+                  type="password"
+                  name="password"
+                  required
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                {rememberMe ?? (
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="remember-me-input"
+                      checked={remember}
+                      onCheckedChange={() => setRemember(!remember)}
+                    />
+                    <Label htmlFor="remember-me-input">
+                      {translate('pages.login.buttons.rememberMe', 'Ghi nhớ đăng nhập')}
+                    </Label>
+                  </div>
+                )}
+                {forgotPasswordLink
+                  ?? renderLink(
+                    '/forgot-password',
+                    translate(
+                      'pages.login.buttons.forgotPassword',
+                      'Quên mật khẩu?',
+                    ),
+                  )}
+              </div>
+              <Button type="submit" className="w-full">
+                {translate('pages.login.signin', 'Đăng nhập')}
+              </Button>
+            </form>
+          </>
+        )}
+      </CardContent>
+      <CardFooter className="flex flex-col space-y-4">
+        {registerLink ?? (
+          <div className="text-sm text-center">
+            {translate(
+              'pages.login.buttons.noAccount',
+              'Chưa có tài khoản?',
+            )}
+            {' '}
+            {renderLink(
+              '/register',
+              translate('pages.login.register', 'Đăng ký'),
+            )}
+          </div>
+        )}
+      </CardFooter>
+    </Card>
   );
 
   return (

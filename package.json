@@ -24,6 +24,7 @@
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.1.4",
     "@radix-ui/react-label": "^2.1.2",
+    "@radix-ui/react-separator": "^1.1.2",
     "@radix-ui/react-slot": "^1.1.2",
     "@refinedev/cli": "^2.16.44",
     "@refinedev/core": "^4.57.7",
@@ -42,6 +43,7 @@
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.483.0",
     "next": "^15.2.3",
+    "next-themes": "^0.4.6",
     "nookies": "^2.5.2",
     "query-string": "^7.1.1",
     "react": "^18.2.0",

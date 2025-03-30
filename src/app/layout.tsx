@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import { ThemeProvider } from '@/components/theme-provider';
 import { BasketContextProvider } from '@/context';
 import { authProviderClient } from '@/providers/auth-provider/auth-provider.client';
 import { dataProvider } from '@/providers/data-provider/client';
@@ -23,7 +24,7 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
         <Suspense>
           <RefineKbarProvider>
@@ -47,9 +48,17 @@ export default function RootLayout({
                 useNewQueryKeys: true,
               }}
             >
-              <BasketContextProvider>
-                {children}
-              </BasketContextProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+                storageKey="bfarmx-theme"
+              >
+                <BasketContextProvider>
+                  {children}
+                </BasketContextProvider>
+              </ThemeProvider>
               <RefineKbar />
             </Refine>
           </RefineKbarProvider>
