@@ -1,3 +1,11 @@
+export type IIdentity = {
+  id: number;
+  name: string;
+  avatar: string;
+  email: string;
+  role: string;
+};
+
 export type File = {
   name: string;
   percent: number;

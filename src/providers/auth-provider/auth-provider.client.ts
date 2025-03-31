@@ -1,8 +1,48 @@
 'use client';
 
 import type { AuthProvider } from '@refinedev/core';
+import axios from 'axios';
 import Cookies from 'js-cookie';
 
+export const TOKEN_KEY = 'bfarmx-auth';
+export const USER_KEY = 'bfarmx-user';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.outfit4rent.online/api';
+const authApiClient = axios.create({
+  baseURL: `${API_URL}`,
+  headers: {
+    'Content-Type': 'application/json',
+    'accept': 'text/plain',
+  },
+});
+function safelyDecodeJwt(token: string) {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      return null;
+    }
+
+    const base64Url = parts[1];
+    if (!base64Url) {
+      return null;
+    }
+
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+
+    const jsonPayload = decodeURIComponent(
+      window
+        .atob(base64)
+        .split('')
+        .map(c => `%${(`00${c.charCodeAt(0).toString(16)}`).slice(-2)}`)
+        .join(''),
+    );
+
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error('Error decoding JWT:', error);
+    return null;
+  }
+}
 const mockUsers = [
   {
     email: 'admin@bfarmx.com',
@@ -14,45 +54,72 @@ const mockUsers = [
 ];
 
 export const authProviderClient: AuthProvider = {
-  login: async ({ email, password, remember }) => {
-    const user = mockUsers.find(item => item.email === email && item.password === password);
-
-    if (user) {
-      if (remember) {
-        Cookies.set('remembered_email', email, {
-          expires: 30, // 30 days
-          path: '/',
-        });
-        Cookies.set('remembered_password', password, {
-          expires: 30, // 30 days
-          path: '/',
-        });
-      } else {
-        Cookies.remove('remembered_email', { path: '/' });
-        Cookies.remove('remembered_password', { path: '/' });
-      }
-
-      const { password: _, ...userWithoutPassword } = user;
-      Cookies.set('auth', JSON.stringify(userWithoutPassword), {
-        expires: 30, // 30 days
-        path: '/',
+  login: async ({ email, password }) => {
+    try {
+      const response = await authApiClient.post('/auth/login', {
+        email,
+        password,
       });
 
-      // Chuyển hướng về trang chủ sau khi đăng nhập thành công
-      window.location.href = '/';
+      if (response.data.status === 200) {
+        const { accessToken } = response.data.data;
+
+        Cookies.set(TOKEN_KEY, accessToken, {
+          expires: 7,
+          path: '/',
+        });
+
+        const tokenPayload = safelyDecodeJwt(accessToken);
+
+        if (!tokenPayload) {
+          return {
+            success: false,
+            error: {
+              message: 'Failed to decode token',
+              name: 'Token decode error',
+            },
+          };
+        }
+
+        const userInfo = {
+          id: tokenPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'],
+          name: tokenPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'],
+          email: tokenPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'],
+          role: tokenPayload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'],
+          avatar: tokenPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/uri'],
+        };
+
+        Cookies.set(USER_KEY, JSON.stringify(userInfo), {
+          expires: 7,
+          path: '/',
+        });
+
+        return {
+          success: true,
+          redirectTo: '/',
+        };
+      }
+
       return {
-        success: true,
-        redirectTo: '/',
+        success: false,
+        error: {
+          message: 'Login failed',
+          name: 'Invalid response from server',
+        },
+      };
+    } catch (error) {
+      const errorMessage
+        = (axios.isAxiosError(error) && error.response?.data?.message)
+          || 'Login failed. Please check your credentials.';
+
+      return {
+        success: false,
+        error: {
+          message: 'Login failed',
+          name: errorMessage,
+        },
       };
     }
-
-    return {
-      success: false,
-      error: {
-        name: 'LoginError',
-        message: 'Email hoặc mật khẩu không chính xác',
-      },
-    };
   },
   register: async (params) => {
     const user = mockUsers.find(item => item.email === params.email);
@@ -109,15 +176,16 @@ export const authProviderClient: AuthProvider = {
     };
   },
   logout: async () => {
-    Cookies.remove('auth', { path: '/' });
+    Cookies.remove(TOKEN_KEY, { path: '/' });
+    Cookies.remove(USER_KEY, { path: '/' });
     return {
       success: true,
       redirectTo: '/auth/login',
     };
   },
   check: async () => {
-    const auth = Cookies.get('auth');
-    if (auth) {
+    const token = Cookies.get(TOKEN_KEY);
+    if (token) {
       return {
         authenticated: true,
       };
@@ -130,20 +198,34 @@ export const authProviderClient: AuthProvider = {
     };
   },
   getPermissions: async () => {
-    const auth = Cookies.get('auth');
-    if (auth) {
-      const parsedUser = JSON.parse(auth);
-      return parsedUser.roles;
+    const userInfo = Cookies.get(USER_KEY);
+    if (userInfo) {
+      const parsedUser = JSON.parse(userInfo);
+      return parsedUser.role;
     }
     return null;
   },
   getIdentity: async () => {
-    const auth = Cookies.get('auth');
-    if (auth) {
-      const parsedUser = JSON.parse(auth);
-      return parsedUser;
+    try {
+      const userStr = Cookies.get(USER_KEY);
+
+      if (!userStr) {
+        return null;
+      }
+
+      const user = JSON.parse(userStr);
+
+      return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar || 'https://i.pravatar.cc/150',
+      };
+    } catch (error) {
+      console.error('Error getting identity:', error);
+      return null;
     }
-    return null;
   },
   onError: async (error) => {
     if (error.response?.status === 401) {

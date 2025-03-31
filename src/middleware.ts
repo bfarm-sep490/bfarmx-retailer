@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const auth = request.cookies.get('auth');
+  const auth = request.cookies.get('bfarmx-auth');
   const isAuthPage = request.nextUrl.pathname.startsWith('/auth');
 
   if (auth && isAuthPage) {
