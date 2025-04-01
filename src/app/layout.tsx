@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { ThemeProvider } from '@/components/theme-provider';
-import { BasketContextProvider } from '@/context';
 import { authProviderClient } from '@/providers/auth-provider/auth-provider.client';
 import { dataProvider } from '@/providers/data-provider/client';
 import { Refine } from '@refinedev/core';
@@ -50,14 +49,12 @@ export default function RootLayout({
             >
               <ThemeProvider
                 attribute="class"
-                defaultTheme="system"
+                defaultTheme="light"
                 enableSystem
                 disableTransitionOnChange
                 storageKey="bfarmx-theme"
               >
-                <BasketContextProvider>
-                  {children}
-                </BasketContextProvider>
+                {children}
               </ThemeProvider>
               <RefineKbar />
             </Refine>

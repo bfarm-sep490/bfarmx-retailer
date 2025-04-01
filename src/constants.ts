@@ -1,4 +1,4 @@
-export const API_URL = 'https://api.finefoods.refine.dev';
+export const API_URL = 'https://api.outfit4rent.online/api';
 
 export const TRANSLATIONS_BON_APPETIT = [
   '😀',

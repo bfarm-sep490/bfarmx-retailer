@@ -1,7 +1,5 @@
 import type { IIdentity } from '@/types';
 import type { Dispatch, SetStateAction } from 'react';
-import { useBasketContext } from '@/hooks/useBasketContext';
-import { useOrdersModalContext } from '@/hooks/useOrdersModalContext';
 import { useActiveAuthProvider, useGetIdentity, useLogout, useTranslate, useWarnAboutChange } from '@refinedev/core';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
@@ -13,7 +11,6 @@ import {
   Phone,
   Settings,
   ShoppingBag,
-  ShoppingCart,
   User,
   X,
 } from 'lucide-react';
@@ -61,7 +58,7 @@ const MenuLink = ({ text, Icon }: { text: string; Icon: IconType }) => {
   return (
     <motion.a
       variants={menuLinkVariants}
-      href="#"
+      href="/orders"
       rel="nofollow"
       className="text-sm hover:text-indigo-500 transition-colors flex items-center gap-2 py-2"
     >
@@ -213,12 +210,9 @@ const Menu = () => {
 
 export const Header = () => {
   const [open, setOpen] = useState(false);
-  const { setOrdersModalVisible } = useOrdersModalContext();
-  const { orders, totalPrice } = useBasketContext();
-  const isBasketHaveOrders = orders.length > 0;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0">
+    <div className="fixed bottom-0 left-0 right-0 z-50">
       <motion.nav
         animate={open ? 'open' : 'closed'}
         initial="closed"
@@ -227,13 +221,12 @@ export const Header = () => {
         <MenuButton setOpen={setOpen} open={open} />
         <div className="flex gap-4 px-4">
           <Link text="Home" Icon={Home} href="/" />
-          <Link text="Shop" Icon={ShoppingBag} href="/shop" />
+          <Link text="Shop" Icon={ShoppingBag} href="/plants" />
           <Link text="Support" Icon={Phone} href="/support" />
           <Link
-            text="Cart"
-            Icon={ShoppingCart}
-            badge={isBasketHaveOrders ? { count: orders.length, price: totalPrice } : undefined}
-            onClick={() => setOrdersModalVisible((prev: boolean) => !prev)}
+            text="Wishlist"
+            Icon={Heart}
+            href="/wishlist"
           />
         </div>
         <Menu />

@@ -85,19 +85,49 @@ export type Event = {
 
 export type Order = {
   id: number;
-  user: User;
-  createdAt: string;
-  products: Product[];
-  status: OrderStatus;
-  adress: Address;
-  store: Store;
-  courier: Courier;
-  events: Event[];
-  orderNumber: number;
-  amount: number;
+  retailer_id: number;
+  retailer_name: string;
+  plant_id: number;
+  plant_name: string;
+  plan_id: number | null;
+  plan_name: string | null;
+  packaging_type_id: number;
+  packaging_type_name: string;
+  deposit_price: number;
+  total_price: number | null;
+  status: string;
+  address: string;
+  phone: string;
+  preorder_quantity: number;
+  estimate_pick_up_date: string;
+  created_at: string;
+  transactions: Array<{
+    id: number;
+    content: string;
+    price: number;
+    type: string;
+    status: string;
+  }>;
+  products: Array<any>;
 };
 
 export type BasketOrder = {
   productId: number;
   amount: number;
+};
+
+export type Plant = {
+  id: number;
+  plant_name: string;
+  quantity: number;
+  description: string;
+  base_price: number;
+  type: string;
+  image_url: string;
+  delta_one: number;
+  delta_two: number;
+  delta_three: number;
+  preservation_day: number;
+  estimated_per_one: number;
+  status: string;
 };

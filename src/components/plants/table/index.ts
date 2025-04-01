@@ -1,0 +1,1 @@
+export { PlantsTable } from './table';
