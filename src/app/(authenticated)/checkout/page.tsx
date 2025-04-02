@@ -116,7 +116,7 @@ export default function CheckoutPage() {
           {
             order_id: orderResponse.data.id,
             amount: getTotalPrice(),
-            description: formData.note || 'Thanh toan don hang',
+            description: formData.note || 'Thanh toán đặt cọc',
           },
         );
 
