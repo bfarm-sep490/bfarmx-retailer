@@ -56,29 +56,24 @@ export const PlansTable = ({ refineCoreProps }: Props) => {
                   id={plan.id}
                   title={plan.plan_name}
                   progress={plan.status === 'Completed' ? 100 : 50}
-                  dueDate={plan.end_date}
-                  contributors={[
-                    { name: plan.expert_name },
-                  ]}
+                  status={plan.status}
+                  statusIcon={getStatusIcon(plan.status)}
+                  metadata={{
+                    plant: { name: plan.plant_name, icon: <Leaf className="h-4 w-4" /> },
+                    yield: { name: plan.yield_name, icon: <Package className="h-4 w-4" /> },
+                    expert: { name: plan.expert_name, icon: <User className="h-4 w-4" /> },
+                    timeline: {
+                      start: plan.start_date,
+                      end: plan.end_date,
+                      icon: <Calendar className="h-4 w-4" />,
+                    },
+                  }}
                   tasks={[
                     { title: `Plant: ${plan.plant_name}`, completed: true },
                     { title: `Yield: ${plan.yield_name}`, completed: true },
                     { title: `Estimated Product: ${plan.estimated_product} ${plan.estimated_unit}`, completed: plan.status === 'Completed' },
                     { title: `Seed Quantity: ${plan.seed_quantity}`, completed: true },
                   ]}
-                  status={plan.status}
-                  statusIcon={getStatusIcon(plan.status)}
-                  metadata={[
-                    { icon: <Leaf className="h-4 w-4" />, label: plan.plant_name },
-                    { icon: <Package className="h-4 w-4" />, label: plan.yield_name },
-                    { icon: <User className="h-4 w-4" />, label: plan.expert_name },
-                    { icon: <Calendar className="h-4 w-4" />, label: `${plan.start_date} - ${plan.end_date}` },
-                  ]}
-                  plant_name={plan.plant_name}
-                  yield_name={plan.yield_name}
-                  expert_name={plan.expert_name}
-                  start_date={plan.start_date}
-                  end_date={plan.end_date}
                   qr_code={plan.qr_code}
                   contract_address={plan.contract_address}
                 />

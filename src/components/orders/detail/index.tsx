@@ -143,7 +143,7 @@ export const OrderDetail: React.FC<OrderPageProps> = ({ useShowProps }) => {
 
   if (!order) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container max-w-7xl mx-auto px-4 py-8">
         <div className="rounded-xl bg-white shadow-lg p-6">
           <Skeleton className="h-8 w-48 mb-4" />
           <div className="grid gap-6 md:grid-cols-2">
@@ -165,7 +165,7 @@ export const OrderDetail: React.FC<OrderPageProps> = ({ useShowProps }) => {
 
   if (_error) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container max-w-7xl mx-auto px-4 py-8">
         <div className="rounded-xl bg-white shadow-lg p-6">
           <div className="text-center">
             <p className="text-lg font-medium text-red-600">{_error}</p>
@@ -183,7 +183,7 @@ export const OrderDetail: React.FC<OrderPageProps> = ({ useShowProps }) => {
 
   if (message) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container max-w-7xl mx-auto px-4 py-8">
         <div className="rounded-xl bg-white shadow-lg p-6">
           <div className="text-center">
             <p className="text-lg font-medium text-green-600">{message}</p>
@@ -363,16 +363,16 @@ export const OrderDetail: React.FC<OrderPageProps> = ({ useShowProps }) => {
       tags: ['Khách hàng', 'Liên hệ'],
       content: (
         <div className="space-y-3">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between gap-4 items-center">
             <span className="text-gray-600">Tên người đặt:</span>
             <span className="font-medium">{order.retailer_name}</span>
           </div>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between gap-4 items-center">
             <span className="text-gray-600">Số điện thoại:</span>
             <span className="font-medium font-mono">{order.phone}</span>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">Địa chỉ:</span>
+          <div className="flex justify-between gap-4 items-center">
+            <span className="text-gray-600 whitespace-nowrap">Địa chỉ:</span>
             <span className="font-medium">{order.address}</span>
           </div>
         </div>
@@ -414,7 +414,7 @@ export const OrderDetail: React.FC<OrderPageProps> = ({ useShowProps }) => {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container max-w-5xl mx-auto px-4 py-8">
       <div className="flex items-center gap-4 mb-6">
         <Button
           variant="outline"
@@ -608,7 +608,7 @@ export const OrderDetail: React.FC<OrderPageProps> = ({ useShowProps }) => {
                   id="embedded-payment-container"
                   className="border rounded-lg overflow-hidden"
                   style={{
-                    height: '380px',
+                    height: '330px',
                   }}
                 >
                 </div>

@@ -22,7 +22,11 @@ type QRCodeModalProps = {
 };
 
 export function QRCodeModal({ isOpen, onClose, planData }: QRCodeModalProps) {
-  const qrData = `${window.location.origin}/qr/${planData.contract_address}`;
+  // Add expiration time to QR data
+  const qrData = JSON.stringify({
+    url: `${window.location.origin}/qr/${planData.contract_address}`,
+    expiresAt: planData.end_date,
+  });
 
   const handleDownload = () => {
     const svg = document.getElementById('qr-code');
@@ -53,14 +57,15 @@ export function QRCodeModal({ isOpen, onClose, planData }: QRCodeModalProps) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="text-xl font-bold">
             QR Code -
             {' '}
             {planData.plan_name}
           </DialogTitle>
         </DialogHeader>
-        <div className="flex flex-col items-center gap-4 py-4">
-          <div className="rounded-lg border p-4">
+        <div className="flex flex-col items-center gap-6 py-4">
+          {/* QR Code */}
+          <div className="rounded-lg border bg-white p-6 shadow-sm transition-all hover:shadow-md">
             <QRCode
               id="qr-code"
               value={qrData}
@@ -69,7 +74,12 @@ export function QRCodeModal({ isOpen, onClose, planData }: QRCodeModalProps) {
               className="h-[200px] w-[200px]"
             />
           </div>
-          <Button onClick={handleDownload}>
+
+          {/* Download Button */}
+          <Button
+            onClick={handleDownload}
+            className="w-full bg-primary hover:bg-accent"
+          >
             <Download className="mr-2 h-4 w-4" />
             Download QR Code
           </Button>

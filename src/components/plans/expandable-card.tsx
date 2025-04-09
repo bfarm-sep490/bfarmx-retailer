@@ -1,6 +1,5 @@
 'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -27,21 +26,36 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { QRCodeModal } from './qr-code-modal';
 
+type PlanMetadata = {
+  plant: {
+    name: string;
+    icon: React.ReactNode;
+  };
+  yield: {
+    name: string;
+    icon: React.ReactNode;
+  };
+  expert: {
+    name: string;
+    icon: React.ReactNode;
+  };
+  timeline: {
+    start: string;
+    end: string;
+    icon: React.ReactNode;
+  };
+};
+
+type PlanStatus = 'Draft' | 'Pending' | 'Ongoing' | 'Completed' | 'Cancelled';
+
 type ProjectStatusCardProps = {
   id: number;
   title: string;
   progress: number;
-  dueDate: string;
-  contributors: Array<{ name: string; image?: string }>;
-  tasks: Array<{ title: string; completed: boolean }>;
-  status: 'Draft' | 'Pending' | 'Ongoing' | 'Completed' | 'Cancelled';
+  status: PlanStatus;
   statusIcon: React.ReactNode;
-  metadata: Array<{ icon: React.ReactNode; label: string }>;
-  plant_name: string;
-  yield_name: string;
-  expert_name: string;
-  start_date: string;
-  end_date: string;
+  metadata: PlanMetadata;
+  tasks: Array<{ title: string; completed: boolean }>;
   qr_code: string;
   contract_address: string;
 };
@@ -50,17 +64,10 @@ export function ProjectStatusCard({
   id,
   title,
   progress,
-  dueDate,
-  contributors,
-  tasks,
   status,
   statusIcon,
   metadata,
-  plant_name,
-  yield_name,
-  expert_name,
-  start_date,
-  end_date,
+  tasks,
   qr_code,
   contract_address,
 }: ProjectStatusCardProps) {
@@ -75,18 +82,18 @@ export function ProjectStatusCard({
     }
   }, [isExpanded, animatedHeight]);
 
-  const getStatusColor = (status: ProjectStatusCardProps['status']) => {
+  const getStatusColor = (status: PlanStatus) => {
     switch (status) {
       case 'Completed':
-        return 'bg-green-100 text-green-600';
+        return 'bg-emerald-100 text-emerald-600 border-emerald-200';
       case 'Ongoing':
-        return 'bg-blue-100 text-blue-600';
+        return 'bg-sky-100 text-sky-600 border-sky-200';
       case 'Pending':
-        return 'bg-yellow-100 text-yellow-600';
+        return 'bg-amber-100 text-amber-600 border-amber-200';
       case 'Cancelled':
-        return 'bg-red-100 text-red-600';
+        return 'bg-rose-100 text-rose-600 border-rose-200';
       default:
-        return 'bg-gray-100 text-gray-600';
+        return 'bg-gray-100 text-gray-600 border-gray-200';
     }
   };
 
@@ -103,24 +110,31 @@ export function ProjectStatusCard({
   return (
     <>
       <Card
-        className="w-full max-w-md cursor-pointer transition-all duration-300 hover:shadow-lg"
+        className="w-full max-w-md cursor-pointer transition-all duration-300 hover:shadow-lg bg-gradient-to-br from-white to-gray-50 border border-gray-100 rounded-xl overflow-hidden"
         onClick={toggleExpand}
       >
-        <CardHeader className="space-y-1">
+        <CardHeader className="space-y-1 p-6">
           <div className="flex justify-between items-start w-full">
             <div className="space-y-2">
-              <Badge variant="secondary" className={getStatusColor(status)}>
+              <Badge variant="secondary" className={`${getStatusColor(status)} border`}>
                 <div className="flex items-center gap-1">
                   {statusIcon}
                   {status}
                 </div>
               </Badge>
-              <h3 className="text-2xl font-semibold">{title}</h3>
+              <h3 className="text-2xl font-semibold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                {title}
+              </h3>
             </div>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button size="icon" variant="outline" className="h-8 w-8" onClick={handleViewQR}>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="h-8 w-8 rounded-full border-gray-200 hover:bg-gray-100"
+                    onClick={handleViewQR}
+                  >
                     <IconQrcode className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
@@ -132,7 +146,7 @@ export function ProjectStatusCard({
           </div>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="p-6 pt-0">
           <div className="space-y-4">
             <div className="space-y-2">
               <div className="flex justify-between text-sm text-gray-600">
@@ -142,7 +156,12 @@ export function ProjectStatusCard({
                   %
                 </span>
               </div>
-              <ProgressBar value={progress} className="h-2" />
+              <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
+                <ProgressBar
+                  value={progress}
+                  className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600"
+                />
+              </div>
             </div>
 
             <motion.div
@@ -160,60 +179,60 @@ export function ProjectStatusCard({
                       className="space-y-4 pt-2"
                     >
                       <div className="grid grid-cols-2 gap-4">
-                        {metadata.map((item, index) => (
-                          <div key={index} className="flex items-center gap-2 text-sm text-gray-600">
-                            {item.icon}
-                            <span>{item.label}</span>
+                        {metadata.plant.icon && (
+                          <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 p-2 rounded-lg">
+                            {metadata.plant.icon}
+                            <span>{metadata.plant.name}</span>
                           </div>
-                        ))}
+                        )}
+                        {metadata.yield.icon && (
+                          <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 p-2 rounded-lg">
+                            {metadata.yield.icon}
+                            <span>{metadata.yield.name}</span>
+                          </div>
+                        )}
+                        {metadata.expert.icon && (
+                          <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 p-2 rounded-lg">
+                            {metadata.expert.icon}
+                            <span>{metadata.expert.name}</span>
+                          </div>
+                        )}
+                        {metadata.timeline.icon && (
+                          <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 p-2 rounded-lg">
+                            {metadata.timeline.icon}
+                            <span>
+                              {metadata.timeline.start}
+                              {' '}
+                              -
+                              {' '}
+                              {metadata.timeline.end}
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       <div className="space-y-2">
-                        <h4 className="font-medium text-sm">Plan Details</h4>
-                        {tasks.map((task, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center justify-between text-sm"
-                          >
-                            <span className="text-gray-600">{task.title}</span>
-                            {task.completed && (
-                              <CheckCircle2 className="h-4 w-4 text-green-500" />
-                            )}
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="space-y-2">
-                        <h4 className="font-medium text-sm">Expert</h4>
-                        <div className="flex items-center gap-2">
-                          {contributors.map((contributor, index) => (
-                            <TooltipProvider key={index}>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Avatar className="border-2 border-white">
-                                    <AvatarImage
-                                      src={
-                                        contributor.image
-                                        || `/placeholder.svg?height=32&width=32&text=${contributor.name[0]}`
-                                      }
-                                      alt={contributor.name}
-                                    />
-                                    <AvatarFallback>
-                                      {contributor.name[0]}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>{contributor.name}</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
+                        <h4 className="font-medium text-sm text-gray-900">Plan Details</h4>
+                        <div className="space-y-2">
+                          {tasks.map((task, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center justify-between text-sm bg-gray-50 p-2 rounded-lg"
+                            >
+                              <span className="text-gray-600">{task.title}</span>
+                              {task.completed && (
+                                <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                              )}
+                            </div>
                           ))}
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <Button className="w-full" onClick={handleViewDetail}>
+                        <Button
+                          className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
+                          onClick={handleViewDetail}
+                        >
                           <MessageSquare className="h-4 w-4 mr-2" />
                           View Discussion
                         </Button>
@@ -226,15 +245,15 @@ export function ProjectStatusCard({
           </div>
         </CardContent>
 
-        <CardFooter>
+        <CardFooter className="p-6 pt-0">
           <div className="flex items-center justify-between w-full text-sm text-gray-600">
-            <span>
-              Due Date:
-              {dueDate}
-            </span>
-            <span>
-              Status:
-              {status}
+            <span className="flex items-center gap-1">
+              <span className="text-gray-400">Contract:</span>
+              <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+                {contract_address.slice(0, 6)}
+                ...
+                {contract_address.slice(-4)}
+              </span>
             </span>
           </div>
         </CardFooter>
@@ -246,11 +265,11 @@ export function ProjectStatusCard({
         planData={{
           id,
           plan_name: title,
-          plant_name,
-          yield_name,
-          expert_name,
-          start_date,
-          end_date,
+          plant_name: metadata.plant.name,
+          yield_name: metadata.yield.name,
+          expert_name: metadata.expert.name,
+          start_date: metadata.timeline.start,
+          end_date: metadata.timeline.end,
           qr_code,
           contract_address,
         }}
