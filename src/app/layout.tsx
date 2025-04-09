@@ -37,6 +37,11 @@ export default function RootLayout({
                   name: 'orders',
                   show: '/orders/:id',
                 },
+                {
+                  name: 'plans',
+                  list: '/plans',
+                  show: '/plans/:id',
+                },
               ]}
               routerProvider={routerProvider}
               dataProvider={dataProvider}

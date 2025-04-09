@@ -3,6 +3,7 @@ import type { Dispatch, SetStateAction } from 'react';
 import { useActiveAuthProvider, useGetIdentity, useLogout, useTranslate, useWarnAboutChange } from '@refinedev/core';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
+  Flower,
   Heart,
   Home,
   LogOut,
@@ -10,7 +11,7 @@ import {
   Package,
   Phone,
   Settings,
-  ShoppingBag,
+  Sprout,
   User,
   X,
 } from 'lucide-react';
@@ -60,9 +61,9 @@ const MenuLink = ({ text, Icon }: { text: string; Icon: IconType }) => {
       variants={menuLinkVariants}
       href="/orders"
       rel="nofollow"
-      className="text-sm hover:text-indigo-500 transition-colors flex items-center gap-2 py-2"
+      className="text-sm hover:text-emerald-500 transition-colors flex items-center gap-3 py-2.5 px-4 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950/50"
     >
-      <Icon className="w-4 h-4" />
+      <Icon className="w-5 h-5" />
       {text}
     </motion.a>
   );
@@ -83,15 +84,15 @@ const Link = ({ text, Icon, badge, onClick, href }: { text: string; Icon: IconTy
     <motion.button
       type="button"
       onClick={handleClick}
-      className="text-sm cursor-pointer w-14 hover:primary transition-all duration-200 flex flex-col gap-1.5 items-center relative group"
+      className="text-sm cursor-pointer w-16 hover:primary transition-all duration-200 flex flex-col gap-1.5 items-center relative group"
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.95 }}
     >
       <div className="relative">
-        <Icon className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
-        <div className="absolute inset-0 bg-indigo-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 -z-10" />
+        <Icon className="w-6 h-6 transition-transform duration-200 group-hover:scale-110" />
+        <div className="absolute inset-0 bg-emerald-50 dark:bg-emerald-950/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 -z-10" />
         {badge && (
-          <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+          <div className="absolute -top-2 -right-2 bg-emerald-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
             {badge.count}
           </div>
         )}
@@ -112,7 +113,7 @@ const MenuButton = ({
     <button
       type="button"
       onClick={() => setOpen(pv => !pv)}
-      className="text-xl font-bold h-full bg-black text-white p-4"
+      className="text-xl font-bold rounded-full h-full bg-emerald-500 text-white p-4 hover:bg-emerald-600 transition-colors"
     >
       <motion.div
         whileHover={{ scale: 1.1 }}
@@ -175,21 +176,21 @@ const Menu = () => {
     <motion.div
       variants={menuVariants}
       style={{ transformOrigin: 'bottom', x: '-50%' }}
-      className="p-6 bg-white shadow-lg absolute bottom-[125%] left-[50%] flex flex-col w-[calc(100vw_-_48px)] max-w-md"
+      className="p-6 rounded-2xl bg-white dark:bg-neutral-900 shadow-lg absolute bottom-[125%] left-[50%] flex flex-col w-[calc(100vw_-_48px)] max-w-md border border-emerald-100 dark:border-emerald-900"
     >
       {/* User Profile Section */}
-      <div className="flex items-center gap-4 mb-6 pb-4 border-b">
-        <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
-          <User className="w-6 h-6 text-gray-600" />
+      <div className="flex items-center gap-4 mb-6 pb-4 border-b border-emerald-100 dark:border-emerald-800">
+        <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center">
+          <User className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
         </div>
         <div>
-          <h4 className="font-semibold">{user?.name}</h4>
-          <p className="text-sm text-gray-500">{user?.email}</p>
+          <h4 className="font-semibold text-emerald-900 dark:text-emerald-100">{user?.name}</h4>
+          <p className="text-sm text-emerald-600 dark:text-emerald-400">{user?.email}</p>
         </div>
       </div>
 
       {/* Menu Items */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1">
         <MenuLink text="Đơn hàng của tôi" Icon={Package} />
         <MenuLink text="Sản phẩm yêu thích" Icon={Heart} />
         <MenuLink text="Cài đặt tài khoản" Icon={Settings} />
@@ -198,10 +199,10 @@ const Menu = () => {
       {/* Logout Button */}
       <button
         type="button"
-        className="mt-6 flex items-center gap-2 text-red-500 hover:text-red-600 transition-colors"
+        className="mt-6 flex items-center gap-2 text-red-500 hover:text-red-600 transition-colors px-4 py-2.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/50"
         onClick={() => handleLogout()}
       >
-        <LogOut className="w-4 h-4" />
+        <LogOut className="w-5 h-5" />
         <span>Đăng xuất</span>
       </button>
     </motion.div>
@@ -216,18 +217,18 @@ export const Header = () => {
       <motion.nav
         animate={open ? 'open' : 'closed'}
         initial="closed"
-        className="bg-white text-black shadow-lg flex items-center justify-between absolute bottom-8 left-[50%] -translate-x-[50%]"
+        className="bg-white dark:bg-neutral-900 rounded-full text-emerald-900 dark:text-emerald-100 shadow-lg flex items-center justify-between absolute bottom-8 left-[50%] -translate-x-[50%] border border-emerald-100 dark:border-emerald-800"
       >
         <MenuButton setOpen={setOpen} open={open} />
-        <div className="flex gap-4 px-4">
+        <div className="flex items-center gap-2 px-4">
           <Link text="Home" Icon={Home} href="/" />
-          <Link text="Shop" Icon={ShoppingBag} href="/plants" />
-          <Link text="Support" Icon={Phone} href="/support" />
+          <Link text="Seed" Icon={Sprout} href="/plants" />
           <Link
-            text="Wishlist"
-            Icon={Heart}
-            href="/wishlist"
+            text="Plan"
+            Icon={Flower}
+            href="/plans"
           />
+          <Link text="Support" Icon={Phone} href="/support" />
         </div>
         <Menu />
       </motion.nav>

@@ -131,3 +131,35 @@ export type Plant = {
   estimated_per_one: number;
   status: string;
 };
+
+export type IPlan = {
+  id: number;
+  plant_id: number;
+  plant_name: string;
+  yield_id: number;
+  yield_name: string;
+  expert_id: number;
+  expert_name: string;
+  plan_name: string;
+  description: string;
+  contract_address: string;
+  start_date: string;
+  end_date: string;
+  complete_date?: string;
+  status: 'Draft' | 'Pending' | 'Ongoing' | 'Completed' | 'Cancelled';
+  estimated_product: number;
+  estimated_unit: string;
+  qr_code: string;
+  seed_quantity: number;
+  created_by: string;
+  created_at: string;
+  updated_by?: string;
+  updated_at?: string;
+  plant_information?: {
+    plant_id: number;
+  };
+  yield_information?: {
+    yield_id: number;
+  };
+  is_approved: boolean;
+};
