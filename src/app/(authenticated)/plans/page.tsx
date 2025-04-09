@@ -26,7 +26,7 @@ export default async function PlansPage() {
               {
                 field: 'status',
                 operator: 'eq',
-                value: 'Pending',
+                value: 'Ongoing',
               },
             ],
           }}
