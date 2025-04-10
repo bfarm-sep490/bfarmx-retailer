@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Search } from 'lucide-react';
 
 type Props = {
   searchValue: string;
@@ -23,28 +24,32 @@ export const Filters = ({
   onStatusChange,
 }: Props) => {
   return (
-    <div className="flex flex-col gap-4 rounded-lg border bg-white p-4 shadow-sm md:flex-row md:items-center">
-      <div className="flex-1">
+    <div className="space-y-4">
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           placeholder="Tìm kiếm theo mã đơn hàng hoặc tên cây trồng..."
           value={searchValue}
           onChange={e => onSearch(e.target.value)}
-          className="max-w-sm"
+          className="pl-9"
         />
       </div>
-      <div className="w-full md:w-48">
-        <Select value={statusValue} onValueChange={onStatusChange}>
-          <SelectTrigger>
-            <SelectValue placeholder="Lọc theo trạng thái" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tất cả đơn hàng</SelectItem>
-            <SelectItem value="Deposit">Đặt cọc</SelectItem>
-            <SelectItem value="Pending">Chờ thanh toán</SelectItem>
-            <SelectItem value="Paid">Đã thanh toán</SelectItem>
-            <SelectItem value="Cancel">Đã hủy</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="flex flex-col gap-4">
+        <div className="space-y-2 w-full">
+          <Select value={statusValue} onValueChange={onStatusChange}>
+            <SelectTrigger className="w-full" id="plant-type">
+              <SelectValue placeholder="Lọc theo trạng thái" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tất cả đơn hàng</SelectItem>
+              <SelectItem value="PendingConfirmation">Chờ xác nhận</SelectItem>
+              <SelectItem value="Pending">Chờ thanh toán</SelectItem>
+              <SelectItem value="Deposit">Đặt cọc</SelectItem>
+              <SelectItem value="Paid">Đã thanh toán</SelectItem>
+              <SelectItem value="Cancel">Đã hủy</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
     </div>
   );

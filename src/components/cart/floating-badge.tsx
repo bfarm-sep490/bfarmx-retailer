@@ -2,12 +2,13 @@ import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cart';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ShoppingCart, X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 export const FloatingBadge = () => {
   const router = useRouter();
-  const { items, getTotalItems, clearCart } = useCartStore();
-  const isVisible = items.length > 0;
+  const pathname = usePathname();
+  const { items, clearCart } = useCartStore();
+  const isVisible = items.length > 0 && pathname !== '/checkout';
 
   const handleClick = () => {
     router.push('/checkout');
@@ -31,12 +32,12 @@ export const FloatingBadge = () => {
           <div className="relative">
             <ShoppingCart className="w-6 h-6" />
             <div className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-              {getTotalItems()}
+              1
             </div>
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-medium">Đơn hàng đang chờ</span>
-            <span className="text-xs text-gray-500">Click để thanh toán</span>
+            <span className="text-xs text-gray-500">Click để đặt hàng</span>
           </div>
           <Button
             variant="ghost"

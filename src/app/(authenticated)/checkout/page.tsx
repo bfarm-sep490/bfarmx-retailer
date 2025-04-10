@@ -1,93 +1,34 @@
 'use client';
 
 import type { IIdentity } from '@/types';
-import type { PayOSConfig } from '@payos/payos-checkout';
 import { ChevronLeftIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { usePackagingTypes } from '@/hooks/usePackagingTypes';
 import { dataProvider } from '@/providers/data-provider/server';
 import { useCartStore } from '@/store/cart';
-import { usePayOS } from '@payos/payos-checkout';
 import { useGetIdentity } from '@refinedev/core';
-import axios from 'axios';
-import { Loader2, X } from 'lucide-react';
+import { CheckCircle2, Info, Loader2, Minus, Plus, User, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-
-type PaymentResponse = {
-  status: number;
-  message: string;
-  data: {
-    bin: string;
-    accountNumber: string;
-    amount: number;
-    description: string;
-    orderCode: number;
-    currency: string;
-    paymentLinkId: string;
-    status: string;
-    expiredAt: number;
-    checkoutUrl: string;
-    qrCode: string;
-  };
-};
+import { useState } from 'react';
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { data: user } = useGetIdentity<IIdentity>();
   const { items, updateQuantity, getTotalItems, getTotalPrice, clearCart } = useCartStore();
+  const { packagingTypes, isLoading: isLoadingPackagingTypes } = usePackagingTypes();
   const [formData, setFormData] = useState({
-    name: '',
+    name: user?.name || '',
     phone: '',
     address: '',
-    note: '',
+    packaging_type_id: 1,
   });
-  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
-  const [paymentData, setPaymentData] = useState<PaymentResponse['data'] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [orderId, setOrderId] = useState<number | null>(null);
-  const [checkoutUrl, setCheckoutUrl] = useState('');
-
-  const handlePaymentSuccess = () => {
-    clearCart();
-    if (orderId) {
-      router.push(`/orders/${orderId}`);
-    }
-  };
-
-  const payOSConfig: PayOSConfig = {
-    RETURN_URL: 'http://localhost:3000/payment-success',
-    ELEMENT_ID: 'embedded-payment-container',
-    CHECKOUT_URL: checkoutUrl,
-    embedded: true,
-    onSuccess: () => {
-      setShowPaymentDialog(false);
-      handlePaymentSuccess();
-    },
-    onCancel: () => {
-      // TODO: Hành động sau khi người dùng Hủy đơn hàng
-    },
-    onExit: () => {
-      // TODO: Hành động sau khi người dùng tắt Pop up
-    },
-  };
-
-  const { open, exit } = usePayOS(payOSConfig);
-
-  useEffect(() => {
-    if (checkoutUrl && showPaymentDialog) {
-      setTimeout(() => {
-        setTimeout(() => {
-          open();
-        }, 500);
-      }, 500);
-    }
-  }, [checkoutUrl, showPaymentDialog]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,7 +40,7 @@ export default function CheckoutPage() {
         variables: {
           retailer_id: user?.id,
           plant_id: items[0]?.plant.id,
-          packaging_type_id: 1,
+          packaging_type_id: formData.packaging_type_id,
           deposit_price: getTotalPrice(),
           address: formData.address,
           phone: formData.phone,
@@ -109,34 +50,13 @@ export default function CheckoutPage() {
       });
 
       if (orderResponse.data) {
-        setOrderId(Number(orderResponse.data.id));
-
-        const paymentResponse = await axios.post<PaymentResponse>(
-          'https://api.outfit4rent.online/api/payments/deposit-payment/payos',
-          {
-            order_id: orderResponse.data.id,
-            amount: getTotalPrice(),
-            description: formData.note || 'Thanh toán đặt cọc',
-          },
-        );
-
-        if (paymentResponse.data.status === 200) {
-          setPaymentData(paymentResponse.data.data);
-          setCheckoutUrl(paymentResponse.data.data.checkoutUrl);
-          setShowPaymentDialog(true);
-        }
+        clearCart();
+        router.push(`/orders/${orderResponse.data.id}`);
       }
     } catch (error) {
       console.error('Error creating order:', error);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleDialogChange = (open: boolean) => {
-    setShowPaymentDialog(open);
-    if (!open && orderId) {
-      router.push(`/orders/${orderId}`);
     }
   };
 
@@ -154,7 +74,7 @@ export default function CheckoutPage() {
 
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
           <div className="text-4xl">🛒</div>
-          <h3 className="mt-4 text-lg font-medium text-gray-900">Chưa có sản phẩm</h3>
+          <h3 className="mt-4 text-lg font-medium text-primary">Chưa có sản phẩm</h3>
           <p className="mt-1 text-sm text-gray-500">
             Vui lòng chọn sản phẩm từ danh sách cây trồng.
           </p>
@@ -172,120 +92,216 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <Link href="/plants">
-          <Button variant="ghost" className="mb-4">
-            <ChevronLeftIcon className="mr-2 h-4 w-4" />
-            Quay lại danh sách cây
-          </Button>
-        </Link>
-      </div>
+    <div className="page mx-auto flex md:max-w-[80vw] max-w-[100vw] flex-col items-center justify-start lg:w-full lg:max-w-container lg:grid-cols-[396px_auto] lg:items-stretch lg:px-6 lg:grid">
+      <aside className="w-full lg:w-auto">
+        <div className="sticky top-0 lg:top-12 md:top-12 z-10 lg:z-auto">
+          <section className="flex flex-col mt-4 lg:mt-12 gap-4 lg:gap-6 md:gap-10 px-4 lg:px-0">
+            <Link className="duration-200 flex font-mono gap-2 group hover:text-primary items-center md:text-sm/[1.25rem] text-muted-foreground text-sm/[0.875rem] transition-colors" href="/plants">
+              <ChevronLeftIcon className="duration-200 group-hover:-translate-x-1 h-4 md:h-5 md:w-5 transition-transform w-4" />
+              <span className="tracking-wider uppercase">Quay lại</span>
+            </Link>
+          </section>
 
-      <Dialog open={showPaymentDialog} onOpenChange={handleDialogChange}>
-        <DialogContent className="sm:max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Thanh toán đơn hàng</DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col space-y-4 py-4">
-            {paymentData && (
-              <>
-                <div className="text-center">
-                  <p className="text-sm text-gray-500">Vui lòng hoàn tất thanh toán trong form bên dưới</p>
-                  <p className="text-lg font-semibold mt-2 text-green-600">
-                    {paymentData.amount.toLocaleString('vi-VN')}
-                    đ
-                  </p>
-                </div>
-                <div className="text-sm text-gray-500 space-y-2 w-full">
-                  <div className="flex justify-between">
-                    <span>Ngân hàng:</span>
-                    <span className="font-medium">{paymentData.bin}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Số tài khoản:</span>
-                    <span className="font-medium">{paymentData.accountNumber}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Nội dung:</span>
-                    <span className="font-medium">{paymentData.description}</span>
-                  </div>
-                </div>
-                <div
-                  id="embedded-payment-container"
-                  style={{
-                    height: '380px',
-                  }}
-                >
-                </div>
-                <div className="text-sm text-gray-500 text-center">
-                  Sau khi thanh toán thành công, vui lòng đợi từ 5 - 10s để hệ thống tự động cập nhật.
-                </div>
+          <div className="mt-4 space-y-4 px-4 lg:px-0">
+            <Card className="p-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-medium text-foreground">Đơn hàng</h2>
                 <Button
-                  variant="outline"
+                  variant="ghost"
+                  size="icon"
+                  className="text-gray-400 hover:text-red-500"
                   onClick={() => {
-                    setShowPaymentDialog(false);
-                    exit();
+                    clearCart();
+                    router.push('/plants');
                   }}
-                  className="w-full"
                 >
-                  Đóng
+                  <X className="w-4 h-4" />
                 </Button>
-              </>
-            )}
+              </div>
+              <div className="mt-4 space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="relative h-20 w-20 flex-none overflow-hidden rounded-xl">
+                    <Image
+                      src={item.plant.image_url}
+                      alt={item.plant.plant_name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-1 flex-col">
+                    <h3 className="font-medium text-foreground">
+                      {item.plant.plant_name}
+                    </h3>
+                    <div className="mt-2 flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 rounded-full md:h-10 md:w-10"
+                        onClick={() => updateQuantity(item.plant.id, Math.max(50, item.quantity - 1))}
+                      >
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <Input
+                        type="number"
+                        min={50}
+                        max={1000}
+                        value={item.quantity}
+                        onChange={e => updateQuantity(item.plant.id, Math.min(1000, Math.max(50, Number.parseInt(e.target.value) || 50)))}
+                        className="w-20 md:w-24 text-center text-sm md:text-base"
+                      />
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 rounded-full md:h-10 md:w-10"
+                        onClick={() => updateQuantity(item.plant.id, Math.min(1000, item.quantity + 1))}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <p className="mt-1 text-sm text-gray-500">
+                      {item.plant.base_price.toLocaleString('vi-VN')}
+                      đ/kg
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 space-y-3 border-t pt-4">
+                <div className="flex justify-between text-sm text-gray-500">
+                  <span>Tổng số lượng</span>
+                  <span className="font-medium text-foreground">
+                    {getTotalItems()}
+                    kg
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm text-gray-500">
+                  <span>Tổng giá trị đơn hàng</span>
+                  <span className="font-medium text-foreground">
+                    {getTotalPrice().toLocaleString('vi-VN')}
+                    đ
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm text-primary">
+                  <span>Đặt cọc 30%</span>
+                  <span className="font-medium">
+                    {(getTotalPrice() * 0.3).toLocaleString('vi-VN')}
+                    đ
+                  </span>
+                </div>
+                <div className="h-px w-full bg-border" />
+                <div className="flex justify-between text-lg font-medium text-primary">
+                  <span></span>
+                  <span>
+                    {(getTotalPrice() * 0.3).toLocaleString('vi-VN')}
+                    đ
+                  </span>
+                </div>
+              </div>
+            </Card>
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      </aside>
 
-      <div className="grid gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+      <div className="container-sm px-4 mt-4 lg:mt-12 m-0 flex flex-col gap-4 lg:gap-6 md:gap-6 w-full lg:w-[calc(80vw_-_40px_-_396px)]">
+        <section className="flex flex-col gap-4 lg:gap-6 md:gap-10">
           <Card className="p-6">
-            <h2 className="text-lg font-medium text-gray-900">Thông tin đặt hàng</h2>
-            <form onSubmit={handleSubmit} className="mt-6 space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="name">Họ tên</Label>
-                <Input
-                  id="name"
-                  required
-                  value={formData.name}
-                  onChange={e => setFormData({ ...formData, name: e.target.value })}
-                />
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-10 w-10 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                <User className="h-5 w-5 text-primary" />
+              </div>
+              <h2 className="text-xl font-semibold text-foreground">Thông tin đặt hàng</h2>
+            </div>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-sm font-medium text-muted-foreground">Họ tên</Label>
+                  <Input
+                    id="name"
+                    disabled
+                    value={formData.name}
+                    className="h-10 text-sm md:text-base bg-muted/50 dark:bg-muted"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-sm font-medium text-muted-foreground">Số điện thoại</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    required
+                    value={formData.phone}
+                    onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                    placeholder="Nhập số điện thoại của bạn"
+                    className="h-10 text-sm md:text-base focus-visible:ring-primary"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">Số điện thoại</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  required
-                  value={formData.phone}
-                  onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="address">Địa chỉ</Label>
+                <Label htmlFor="address" className="text-sm font-medium text-muted-foreground">Địa chỉ giao hàng</Label>
                 <Input
                   id="address"
                   required
                   value={formData.address}
                   onChange={e => setFormData({ ...formData, address: e.target.value })}
+                  placeholder="Nhập địa chỉ giao hàng"
+                  className="h-10 text-sm md:text-base focus-visible:ring-primary"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="note">Ghi chú</Label>
-                <Input
-                  id="note"
-                  value={formData.note}
-                  onChange={e => setFormData({ ...formData, note: e.target.value })}
-                />
+                <Label htmlFor="packaging_type" className="text-sm font-medium text-muted-foreground">Loại đóng gói</Label>
+                <Select
+                  value={formData.packaging_type_id.toString()}
+                  onValueChange={value => setFormData({ ...formData, packaging_type_id: Number(value) })}
+                >
+                  <SelectTrigger className="h-10 text-sm md:text-base focus-visible:ring-primary">
+                    <SelectValue placeholder="Chọn loại đóng gói" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {packagingTypes.map(type => (
+                      <SelectItem key={type?.id} value={type?.id?.toString() || ''} className="text-sm md:text-base">
+                        {type?.name}
+                        {' '}
+                        (
+                        {type?.quantity_per_pack}
+                        kg)
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {formData.packaging_type_id && (
+                  <p className="text-xs md:text-sm text-muted-foreground mt-1">
+                    {packagingTypes.find(type => type.id === formData.packaging_type_id)?.description}
+                  </p>
+                )}
+              </div>
+
+              <div className="rounded-lg bg-muted/50 dark:bg-muted p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Info className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium text-foreground">Lưu ý khi đặt hàng</span>
+                </div>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary mt-0.5" />
+                    <span>Vui lòng kiểm tra kỹ thông tin trước khi đặt hàng</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary mt-0.5" />
+                    <span>Đơn hàng sẽ được xác nhận trong vòng 24h</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary mt-0.5" />
+                    <span>Liên hệ hotline nếu cần hỗ trợ: 1900 1234</span>
+                  </li>
+                </ul>
               </div>
 
               <Button
                 type="submit"
-                className="w-full bg-primary hover:bg-primary/90"
-                disabled={isLoading}
+                className="w-full bg-primary hover:bg-primary/90 h-10 md:h-12 text-sm md:text-base font-medium text-primary-foreground"
+                disabled={isLoading || isLoadingPackagingTypes}
               >
                 {isLoading
                   ? (
@@ -300,85 +316,7 @@ export default function CheckoutPage() {
               </Button>
             </form>
           </Card>
-        </div>
-
-        <div className="lg:col-span-1">
-          <Card className="p-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-medium text-gray-900">Đơn hàng</h2>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-gray-400 hover:text-red-500"
-                onClick={() => {
-                  clearCart();
-                  router.push('/plants');
-                }}
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
-            <div className="mt-4 space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="relative h-16 w-16 flex-none overflow-hidden rounded-lg">
-                  <Image
-                    src={item.plant.image_url}
-                    alt={item.plant.plant_name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="flex flex-1 flex-col">
-                  <h3 className="font-medium text-gray-900">
-                    {item.plant.plant_name}
-                  </h3>
-                  <div className="mt-2 flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => updateQuantity(item.plant.id, Math.max(1, item.quantity - 1))}
-                    >
-                      -
-                    </Button>
-                    <Input
-                      type="number"
-                      min={1}
-                      max={item.plant.quantity}
-                      value={item.quantity}
-                      onChange={e => updateQuantity(item.plant.id, Math.min(item.plant.quantity, Math.max(1, Number.parseInt(e.target.value) || 1)))}
-                      className="w-16 text-center"
-                    />
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => updateQuantity(item.plant.id, Math.min(item.plant.quantity, item.quantity + 1))}
-                    >
-                      +
-                    </Button>
-                  </div>
-                  <p className="mt-1 text-sm text-gray-500">
-                    {item.plant.base_price.toLocaleString('vi-VN')}
-                    đ
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 space-y-2 border-t pt-4">
-              <div className="flex justify-between text-sm text-gray-500">
-                <span>Tổng số sản phẩm</span>
-                <span>{getTotalItems()}</span>
-              </div>
-              <div className="flex justify-between text-lg font-medium text-gray-900">
-                <span>Tổng tiền</span>
-                <span>
-                  {getTotalPrice().toLocaleString('vi-VN')}
-                  đ
-                </span>
-              </div>
-            </div>
-          </Card>
-        </div>
+        </section>
       </div>
     </div>
   );

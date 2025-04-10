@@ -300,7 +300,7 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
               <CardContent className="p-8 text-center">
                 <div>
                   <DotLottieReact
-                    src="/anim/cat.json"
+                    src="/anim/loading.json"
                     loop
                     autoplay
                   />
@@ -343,12 +343,7 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
                     </svg>
                     Thử lại
                   </Button>
-                  <Button variant="outline" className="border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 w-full">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>
-                    Quay lại
-                  </Button>
+
                 </div>
               </CardContent>
             </Card>
@@ -381,12 +376,7 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
                     </svg>
                     Thử lại
                   </Button>
-                  <Button variant="outline" className="border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 w-full">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>
-                    Quay lại
-                  </Button>
+
                 </div>
               </CardContent>
             </Card>

@@ -89,7 +89,7 @@ const Link = ({ text, Icon, badge, onClick, href }: { text: string; Icon: IconTy
       whileTap={{ scale: 0.95 }}
     >
       <div className="relative">
-        <Icon className="w-6 h-6 transition-transform duration-200 group-hover:scale-110" />
+        <Icon className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
         <div className="absolute inset-0 bg-emerald-50 dark:bg-emerald-950/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 -z-10" />
         {badge && (
           <div className="absolute -top-2 -right-2 bg-emerald-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -124,7 +124,7 @@ const MenuButton = ({
             ? (
                 <motion.span
                   key="icon-1"
-                  className="block"
+                  className="block cursor-pointer"
                   variants={iconVariants}
                   initial="initial"
                   animate="animate"
@@ -137,7 +137,7 @@ const MenuButton = ({
             : (
                 <motion.span
                   key="icon-2"
-                  className="block"
+                  className="block cursor-pointer"
                   variants={iconVariants}
                   initial="initial"
                   animate="animate"

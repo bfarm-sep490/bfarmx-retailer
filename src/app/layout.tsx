@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { ThemeProvider } from '@/components/theme-provider';
+import { ablyClient } from '@/lib/ablyClient';
 import { authProviderClient } from '@/providers/auth-provider/auth-provider.client';
 import { dataProvider } from '@/providers/data-provider/client';
+import { liveProvider } from '@refinedev/ably';
 import { Refine } from '@refinedev/core';
 import { RefineKbar, RefineKbarProvider } from '@refinedev/kbar';
 import routerProvider from '@refinedev/nextjs-router';
@@ -28,6 +30,12 @@ export default function RootLayout({
         <Suspense>
           <RefineKbarProvider>
             <Refine
+              options={{
+                syncWithLocation: true,
+                warnWhenUnsavedChanges: true,
+                liveMode: 'auto',
+              }}
+              liveProvider={liveProvider(ablyClient)}
               resources={[
                 {
                   name: 'categories',
@@ -46,11 +54,6 @@ export default function RootLayout({
               routerProvider={routerProvider}
               dataProvider={dataProvider}
               authProvider={authProviderClient}
-              options={{
-                syncWithLocation: true,
-                warnWhenUnsavedChanges: true,
-                useNewQueryKeys: true,
-              }}
             >
               <ThemeProvider
                 attribute="class"

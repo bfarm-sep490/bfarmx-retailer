@@ -111,7 +111,8 @@ export const OrderDetail: React.FC<OrderPageProps> = ({ useShowProps }) => {
   const handleCancelOrder = async () => {
     try {
       const response = await axios.put(
-        `https://api.outfit4rent.online/api/orders/${order?.id}/cancel`,
+        `https://api.outfit4rent.online/api/orders/${order?.id}/status?status=Cancel`,
+
       );
 
       if (response.data.status === 200) {
@@ -207,7 +208,7 @@ export const OrderDetail: React.FC<OrderPageProps> = ({ useShowProps }) => {
         return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
       case 'Paid':
         return 'bg-green-500/10 text-green-500 border-green-500/20';
-      case 'Cancelled':
+      case 'Cancel':
         return 'bg-red-500/10 text-red-500 border-red-500/20';
       default:
         return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
@@ -222,7 +223,7 @@ export const OrderDetail: React.FC<OrderPageProps> = ({ useShowProps }) => {
         return 'from-yellow-600 to-yellow-700';
       case 'Paid':
         return 'from-green-600 to-green-700';
-      case 'Cancelled':
+      case 'Cancel':
         return 'from-red-600 to-red-700';
       default:
         return 'from-gray-600 to-gray-700';
@@ -231,13 +232,15 @@ export const OrderDetail: React.FC<OrderPageProps> = ({ useShowProps }) => {
 
   const getStatusText = (status: string) => {
     switch (status) {
+      case 'PendingConfirmation':
+        return 'Chờ xác nhận';
       case 'Pending':
         return 'Chờ thanh toán';
       case 'Deposit':
-        return 'Đã đặt cọc';
+        return 'Đặt cọc';
       case 'Paid':
         return 'Đã thanh toán';
-      case 'Cancelled':
+      case 'Cancel':
         return 'Đã hủy';
       default:
         return status;
@@ -246,13 +249,15 @@ export const OrderDetail: React.FC<OrderPageProps> = ({ useShowProps }) => {
 
   const getOrderProgress = (status: string) => {
     switch (status) {
-      case 'Pending':
+      case 'PendingConfirmation':
         return 25;
-      case 'Deposit':
+      case 'Pending':
         return 50;
+      case 'Deposit':
+        return 75;
       case 'Paid':
         return 100;
-      case 'Cancelled':
+      case 'Cancel':
         return 0;
       default:
         return 0;
@@ -431,7 +436,7 @@ export const OrderDetail: React.FC<OrderPageProps> = ({ useShowProps }) => {
           <AlertCircle className="w-5 h-5 text-orange-500 mt-0.5" />
           <div>
             <p className="text-sm text-orange-800 font-medium">
-              Lưu ý: Đơn hàng sẽ tự động hủy sau 1 giờ nếu chưa thanh toán
+              Lưu ý: Đơn hàng sẽ tự động hủy sau 3 ngày nếu chưa thanh toán
             </p>
             <p className="text-xs text-orange-600 mt-1">
               Vui lòng hoàn tất thanh toán trước khi đơn hàng bị hủy
