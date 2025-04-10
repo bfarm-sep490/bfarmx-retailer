@@ -216,8 +216,9 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
       };
 
       // Check if QR code is expired
-      const endDate = new Date(Number(result.decoded.planData[6]) * 1000);
-      if (dayjs().isAfter(endDate)) {
+      const qrData = JSON.parse(result.decoded.planData[4] || '{}');
+      const expiresAt = qrData.expiresAt;
+      if (!expiresAt || dayjs().unix() > expiresAt) {
         setError('QR code đã hết hạn');
         setLoading(false);
         return;
