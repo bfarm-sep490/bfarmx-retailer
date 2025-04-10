@@ -18,7 +18,7 @@ export default function AuthLayout({ children }: PropsWithChildren) {
         <div className="relative z-10">
           <div className="mb-12">
             <Image
-              src="/logo.png"
+              src="https://ik.imagekit.io/van/logo.png?updatedAt=1744261533617"
               alt="BFarmX Logo"
               width={180}
               height={48}
@@ -91,7 +91,7 @@ export default function AuthLayout({ children }: PropsWithChildren) {
       <div className="flex-1 flex flex-col min-h-screen">
         <div className="md:hidden p-6">
           <Image
-            src="/logo.png"
+            src="https://ik.imagekit.io/van/logo.png?updatedAt=1744261533617"
             alt="BFarmX Logo"
             width={140}
             height={38}
