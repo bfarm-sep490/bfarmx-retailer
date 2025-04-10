@@ -10,10 +10,25 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { Connex } from '@vechain/connex';
 import { motion } from 'framer-motion';
 import { Calendar, Leaf, Package, User } from 'lucide-react';
+import Image from 'next/image';
 import { use, useEffect, useState } from 'react';
+
+// Add keyframe animation for progress bar
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes progress {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+  }
+  .animate-progress {
+    animation: progress 2s ease-in-out infinite;
+  }
+`;
+document.head.appendChild(style);
 
 type PlanData = {
   planId: string;
@@ -74,7 +89,7 @@ type InspectionMilestone = {
 };
 
 export default function QRPlanDetailPage({ params }: { params: Promise<{ id: string } | null> }) {
-  const [_loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [plans, setPlans] = useState<{
     planData: PlanData | null;
@@ -274,7 +289,7 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
     }
   };
 
-  if (_loading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-green-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="max-w-md w-full mx-4">
@@ -283,16 +298,18 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
             <div className="absolute -bottom-4 left-8 right-8 h-4 bg-green-100/30 dark:bg-green-900/10 rounded-b-xl"></div>
             <Card className="relative border-0 shadow-lg bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
               <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
-                  <svg className="w-8 h-8 text-green-500 dark:text-green-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
+                <div>
+                  <DotLottieReact
+                    src="/anim/cat.json"
+                    loop
+                    autoplay
+                  />
                 </div>
                 <h3 className="text-xl font-bold text-green-800 dark:text-green-300 mb-2">Đang tải dữ liệu</h3>
                 <p className="text-gray-600 dark:text-gray-300">Vui lòng đợi trong giây lát...</p>
                 <div className="mt-4">
                   <div className="h-2 bg-green-100 dark:bg-green-900/20 rounded-full overflow-hidden">
-                    <div className="w-1/3 h-full bg-green-500 dark:bg-green-400 rounded-full animate-pulse"></div>
+                    <div className="w-full h-full bg-green-500 dark:bg-green-400 rounded-full animate-progress"></div>
                   </div>
                 </div>
               </CardContent>
@@ -392,10 +409,21 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
             <Card className="relative border-0 shadow-lg bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
               <CardHeader className="space-y-4">
                 <div className="flex justify-between items-start">
-                  <div className="space-y-2">
-                    <Badge variant="secondary" className={`${getStatusColor(plans.planData.status)} rounded-full px-4 py-1`}>
-                      {plans.planData.status}
-                    </Badge>
+                  <div className="space-y-2 w-full">
+                    <div className="flex justify-between items-center gap-3">
+                      <Image
+                        src="https://ik.imagekit.io/van/logo.png?updatedAt=1744261533617"
+                        alt="BFarmX Logo"
+                        width={40}
+                        height={40}
+                        priority
+                        className="drop-shadow-lg"
+                      />
+                      <Badge variant="secondary" className={`${getStatusColor(plans.planData.status)} rounded-full px-4 py-1`}>
+                        {plans.planData.status}
+                      </Badge>
+
+                    </div>
                     <CardTitle className="mt-2 text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">
                       {plans.planData.planName}
                     </CardTitle>
