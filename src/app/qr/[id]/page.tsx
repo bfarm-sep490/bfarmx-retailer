@@ -49,12 +49,11 @@ type TaskMilestone = {
   timestamp: string;
   status: string;
   data: {
-    d: string;
-    f: { id: string; n: string };
-    ft: Array<{ id: string; n: string; q: number; u: string }>;
-    p: Array<{ id: string; n: string; q: number; u: string }>;
-    i: Array<{ id: string; n: string; q: number; u: string }>;
-    t: number;
+    Description: string;
+    Farmer: { Id: number; Name: string };
+    Fertilizers: Array<{ Id: number; Name: string; Quantity: number; Unit: string }>;
+    Pesticides: Array<{ Id: number; Name: string; Quantity: number; Unit: string }>;
+    Timestamp: number;
   };
 };
 
@@ -642,31 +641,31 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
                                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
                                               <p className="text-sm text-gray-500 dark:text-gray-400">Người thực hiện</p>
-                                              <p className="font-medium text-green-800 dark:text-green-300">{task.data?.f?.n || ''}</p>
+                                              <p className="font-medium text-green-800 dark:text-green-300">{task.data?.Farmer?.Name || ''}</p>
                                             </div>
                                             <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
                                               <p className="text-sm text-gray-500 dark:text-gray-400">Mô tả</p>
-                                              <p className="font-medium text-green-800 dark:text-green-300">{task.data?.d || ''}</p>
+                                              <p className="font-medium text-green-800 dark:text-green-300">{task.data?.Description || ''}</p>
                                             </div>
                                           </div>
 
-                                          {task.data?.ft?.length > 0 && (
+                                          {task.data?.Fertilizers?.length > 0 && (
                                             <div className="mt-4">
                                               <h5 className="text-sm font-semibold text-green-800 dark:text-green-300 mb-3">Phân bón sử dụng</h5>
                                               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                                {task.data.ft.map(ft => (
+                                                {task.data.Fertilizers.map(ft => (
                                                   <motion.div
-                                                    key={ft.id}
+                                                    key={ft.Id}
                                                     initial={{ opacity: 0, scale: 0.9 }}
                                                     animate={{ opacity: 1, scale: 1 }}
                                                     transition={{ duration: 0.2 }}
                                                     className="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-green-800 hover:shadow-md transition-shadow duration-300"
                                                   >
-                                                    <p className="font-medium text-green-800 dark:text-green-300">{ft.n}</p>
+                                                    <p className="font-medium text-green-800 dark:text-green-300">{ft.Name}</p>
                                                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                                                      {ft.q}
+                                                      {ft.Quantity}
                                                       {' '}
-                                                      {ft.u}
+                                                      {ft.Unit}
                                                     </p>
                                                   </motion.div>
                                                 ))}
