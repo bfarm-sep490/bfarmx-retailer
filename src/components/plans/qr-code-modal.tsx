@@ -25,7 +25,6 @@ export function QRCodeModal({ isOpen, onClose, planData }: QRCodeModalProps) {
   // Add expiration time to QR data
   const qrData = JSON.stringify({
     url: `${process.env.NEXT_PUBLIC_APP_URL}/qr/${planData.contract_address}`,
-    expiresAt: Math.floor(new Date().getTime() / 1000) + 1800,
   });
 
   const handleDownload = () => {

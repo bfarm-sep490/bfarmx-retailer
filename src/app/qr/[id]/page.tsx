@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Connex } from '@vechain/connex';
-import dayjs from 'dayjs';
 import { motion } from 'framer-motion';
 import { Calendar, Leaf, Package, User } from 'lucide-react';
 import { use, useEffect, useState } from 'react';
@@ -214,15 +213,6 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
           data: inspection?.[3] ? JSON.parse(inspection[3]) : {},
         })) || [],
       };
-
-      // Check if QR code is expired
-      const qrData = JSON.parse(result.decoded.planData[4] || '{}');
-      const expiresAt = qrData.expiresAt;
-      if (!expiresAt || dayjs().unix() > expiresAt) {
-        setError('QR code đã hết hạn');
-        setLoading(false);
-        return;
-      }
 
       setPlans(parsedPlans);
       setLoading(false);
