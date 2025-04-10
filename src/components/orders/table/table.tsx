@@ -1,6 +1,6 @@
 'use client';
 
-import type { Order } from '@/types';
+import type { IIdentity, Order } from '@/types';
 import type { HttpError, useTableProps } from '@refinedev/core';
 import type { ColumnDef } from '@tanstack/react-table';
 import {
@@ -13,10 +13,18 @@ import {
   PhoneIcon,
 } from '@/components/icons';
 import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useGetIdentity } from '@refinedev/core';
 import { useTable } from '@refinedev/react-table';
 import { flexRender } from '@tanstack/react-table';
 import Link from 'next/link';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 type Props = {
   refineCoreProps?: Partial<useTableProps<Order, HttpError, Order>>;
@@ -34,6 +42,10 @@ type StatusOrder = typeof statusOrder;
 type StatusKey = keyof StatusOrder;
 
 export const OrdersTable = ({ refineCoreProps }: Props) => {
+  const { data: user } = useGetIdentity<IIdentity>();
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+
   const columns = useMemo<ColumnDef<Order>[]>(
     () => [
       {
@@ -143,6 +155,22 @@ export const OrdersTable = ({ refineCoreProps }: Props) => {
     refineCoreProps: {
       syncWithLocation: true,
       resource: 'orders',
+      filters: {
+        permanent: [
+          {
+            field: 'retailer_id',
+            operator: 'eq',
+            value: user?.id,
+          },
+          ...(statusFilter !== 'all'
+            ? [{
+                field: 'status',
+                operator: 'eq' as const,
+                value: statusFilter,
+              }]
+            : []),
+        ],
+      },
       initialPageSize: 6,
       pagination: {
         mode: 'client',
@@ -161,9 +189,12 @@ export const OrdersTable = ({ refineCoreProps }: Props) => {
         return statusA - statusB;
       }
 
-      return new Date(b.original.created_at).getTime() - new Date(a.original.created_at).getTime();
+      const dateA = new Date(a.original.created_at).getTime();
+      const dateB = new Date(b.original.created_at).getTime();
+
+      return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
     });
-  }, [getRowModel().rows]);
+  }, [getRowModel().rows, sortOrder]);
 
   const pageIndex = pagination?.pageIndex ?? 0;
 
@@ -181,6 +212,57 @@ export const OrdersTable = ({ refineCoreProps }: Props) => {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-4 w-4"
+            >
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+            </svg>
+            <Select
+              value={statusFilter}
+              onValueChange={setStatusFilter}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Lọc theo trạng thái" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tất cả</SelectItem>
+                <SelectItem value="Pending">Chờ thanh toán</SelectItem>
+                <SelectItem value="PendingConfirmation">Chờ xác nhận</SelectItem>
+                <SelectItem value="Deposit">Đặt cọc</SelectItem>
+                <SelectItem value="Paid">Đã thanh toán</SelectItem>
+                <SelectItem value="Cancel">Đã hủy</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-2">
+            <Select
+              value={sortOrder}
+              onValueChange={(value: 'asc' | 'desc') => setSortOrder(value)}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Sắp xếp theo ngày" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="desc">Mới nhất</SelectItem>
+                <SelectItem value="asc">Cũ nhất</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+
       <div className="space-y-4">
         {rows.map(row => (
           <div key={row.id}>

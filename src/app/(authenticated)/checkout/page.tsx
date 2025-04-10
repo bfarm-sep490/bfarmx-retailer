@@ -3,15 +3,21 @@
 import type { IIdentity } from '@/types';
 import { ChevronLeftIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { usePackagingTypes } from '@/hooks/usePackagingTypes';
+import { cn } from '@/lib/utils';
 import { dataProvider } from '@/providers/data-provider/server';
 import { useCartStore } from '@/store/cart';
 import { useGetIdentity } from '@refinedev/core';
-import { CheckCircle2, Info, Loader2, Minus, Plus, User, X } from 'lucide-react';
+import { format } from 'date-fns';
+import { vi } from 'date-fns/locale';
+import { CalendarIcon, CheckCircle2, Info, Loader2, Minus, Plus, User, X } from 'lucide-react';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -27,6 +33,7 @@ export default function CheckoutPage() {
     phone: '',
     address: '',
     packaging_type_id: 1,
+    estimate_pick_up_date: new Date(),
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -41,11 +48,11 @@ export default function CheckoutPage() {
           retailer_id: user?.id,
           plant_id: items[0]?.plant.id,
           packaging_type_id: formData.packaging_type_id,
-          deposit_price: getTotalPrice(),
+          deposit_price: getTotalPrice() * 0.3,
           address: formData.address,
           phone: formData.phone,
           preorder_quantity: getTotalItems(),
-          estimate_pick_up_date: new Date().toISOString(),
+          estimate_pick_up_date: formData.estimate_pick_up_date.toISOString(),
         },
       });
 
@@ -275,6 +282,37 @@ export default function CheckoutPage() {
                     {packagingTypes.find(type => type.id === formData.packaging_type_id)?.description}
                   </p>
                 )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="estimate_pick_up_date" className="text-sm font-medium text-muted-foreground">Ngày dự kiến nhận hàng</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        'w-full h-10 text-sm md:text-base justify-start text-left font-normal',
+                        !formData.estimate_pick_up_date && 'text-muted-foreground',
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {formData.estimate_pick_up_date
+                        ? format(formData.estimate_pick_up_date, 'PPP', { locale: vi })
+                        : <span>Chọn ngày</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={formData.estimate_pick_up_date}
+                      onSelect={date => date && setFormData({ ...formData, estimate_pick_up_date: date })}
+
+                      initialFocus
+                      disabled={date => date < new Date()}
+                      locale={vi}
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div className="rounded-lg bg-muted/50 dark:bg-muted p-4 space-y-2">

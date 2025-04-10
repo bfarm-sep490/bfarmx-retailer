@@ -3,7 +3,6 @@ import type { GetListResponse } from '@refinedev/core';
 import Loading from '@/app/loading';
 import { OrderFiltersWrapper } from '@/components/orders/filters/filters-wrapper';
 import { OrdersTable } from '@/components/orders/table';
-import { Skeleton } from '@/components/ui/skeleton';
 import { dataProvider } from '@/providers/data-provider/server';
 import { Separator } from '@radix-ui/react-separator';
 import { Suspense } from 'react';
@@ -36,7 +35,7 @@ export default async function OrdersPage() {
       </aside>
 
       <div className="container-sm px-4 mt-4 lg:mt-12 m-0 flex flex-col gap-4 lg:gap-6 md:gap-6 w-full lg:w-[calc(80vw_-_40px_-_296px)]">
-        <Suspense fallback={<OrdersTableSkeleton />}>
+        <Suspense fallback={<Loading />}>
           <OrdersTable
             refineCoreProps={{
               queryOptions: {
@@ -49,28 +48,11 @@ export default async function OrdersPage() {
     </div>
   );
 }
-function OrdersTableSkeleton() {
-  return (
-    <div className="space-y-4">
-      {[...Array.from({ length: 3 })].map((_, i) => (
-        <div key={i} className="flex flex-col items-center gap-4 rounded-lg border p-4 md:flex-row md:gap-8">
-          <div className="flex-auto space-y-2 text-center md:text-left">
-            <Skeleton className="h-6 w-48" />
-            <Skeleton className="h-4 w-full" />
-            <div className="flex flex-wrap gap-2">
-              <Skeleton className="h-6 w-24" />
-            </div>
-          </div>
-          <Skeleton className="h-8 w-24" />
-        </div>
-      ))}
-    </div>
-  );
-}
 async function getData() {
   try {
     const orderData: GetListResponse<Order> = await dataProvider.getList({
       resource: 'orders',
+
     });
 
     return {

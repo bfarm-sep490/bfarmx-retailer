@@ -347,15 +347,13 @@ export const OrderDetail: React.FC<OrderPageProps> = ({ useShowProps }) => {
                 đ
               </span>
             </div>
-            {order.total_price && (
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Tổng giá trị:</span>
-                <span className="font-medium text-green-600 font-mono">
-                  {order.total_price.toLocaleString('vi-VN')}
-                  đ
-                </span>
-              </div>
-            )}
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">Tổng giá trị:</span>
+              <span className="font-medium text-green-600 font-mono">
+                {(order.total_price || order.deposit_price / 0.3).toLocaleString('vi-VN')}
+                đ
+              </span>
+            </div>
           </div>
         </div>
       ),

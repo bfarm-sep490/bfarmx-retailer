@@ -53,6 +53,7 @@ type TaskMilestone = {
     Farmer: { Id: number; Name: string };
     Fertilizers: Array<{ Id: number; Name: string; Quantity: number; Unit: string }>;
     Pesticides: Array<{ Id: number; Name: string; Quantity: number; Unit: string }>;
+    Items: Array<{ Id: number; Name: string; Quantity: number; Unit: string }>;
     Timestamp: number;
   };
 };
@@ -670,6 +671,11 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
                                                   </motion.div>
                                                 ))}
                                               </div>
+                                            </div>
+                                          )}
+                                          {task.data?.Items?.length > 0 && (
+                                            <div className="mt-4">
+                                              <h5 className="text-sm font-semibold text-green-800 dark:text-green-300 mb-3">Các mặt hàng khác</h5>
                                             </div>
                                           )}
                                         </CardContent>
