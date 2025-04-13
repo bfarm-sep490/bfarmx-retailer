@@ -52,7 +52,6 @@ async function getData() {
   try {
     const orderData: GetListResponse<Order> = await dataProvider.getList({
       resource: 'orders',
-
     });
 
     return {

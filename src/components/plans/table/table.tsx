@@ -51,33 +51,31 @@ export const PlansTable = ({ refineCoreProps }: Props) => {
 
           return (
             <div className="block">
-              <div className="group relative flex flex-col overflow-hidden rounded-lg border shadow-sm transition-all hover:shadow-md">
-                <ProjectStatusCard
-                  id={plan.id}
-                  title={plan.plan_name}
-                  progress={plan.status === 'Completed' ? 100 : 50}
-                  status={plan.status}
-                  statusIcon={getStatusIcon(plan.status)}
-                  metadata={{
-                    plant: { name: plan.plant_name, icon: <Leaf className="h-4 w-4" /> },
-                    yield: { name: plan.yield_name, icon: <Package className="h-4 w-4" /> },
-                    expert: { name: plan.expert_name, icon: <User className="h-4 w-4" /> },
-                    timeline: {
-                      start: plan.start_date,
-                      end: plan.end_date,
-                      icon: <Calendar className="h-4 w-4" />,
-                    },
-                  }}
-                  tasks={[
-                    { title: `Plant: ${plan.plant_name}`, completed: true },
-                    { title: `Yield: ${plan.yield_name}`, completed: true },
-                    { title: `Estimated Product: ${plan.estimated_product} ${plan.estimated_unit}`, completed: plan.status === 'Completed' },
-                    { title: `Seed Quantity: ${plan.seed_quantity}`, completed: true },
-                  ]}
-                  qr_code={plan.qr_code}
-                  contract_address={plan?.contract_address}
-                />
-              </div>
+              <ProjectStatusCard
+                id={plan.id}
+                title={plan.plan_name}
+                progress={plan.status === 'Completed' ? 100 : 50}
+                status={plan.status}
+                statusIcon={getStatusIcon(plan.status)}
+                metadata={{
+                  plant: { name: plan.plant_name, icon: <Leaf className="h-4 w-4" /> },
+                  yield: { name: plan.yield_name, icon: <Package className="h-4 w-4" /> },
+                  expert: { name: plan.expert_name, icon: <User className="h-4 w-4" /> },
+                  timeline: {
+                    start: plan.start_date,
+                    end: plan.end_date,
+                    icon: <Calendar className="h-4 w-4" />,
+                  },
+                }}
+                tasks={[
+                  { title: `Plant: ${plan.plant_name}`, completed: true },
+                  { title: `Yield: ${plan.yield_name}`, completed: true },
+                  { title: `Estimated Product: ${plan.estimated_product} kg`, completed: plan.status === 'Completed' },
+                  { title: `Seed Quantity: ${plan.seed_quantity}`, completed: true },
+                ]}
+                qr_code={plan.qr_code}
+                contract_address={plan?.contract_address}
+              />
             </div>
           );
         },
@@ -128,13 +126,13 @@ export const PlansTable = ({ refineCoreProps }: Props) => {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {rows.map((row) => {
           return (
-            <div key={row.id}>
+            <div key={row.id} className="w-full">
               {row.getVisibleCells().map((cell) => {
                 return (
-                  <div key={cell.id}>
+                  <div key={cell.id} className="w-full">
                     {flexRender(
                       cell.column.columnDef.cell,
                       cell.getContext(),
@@ -147,8 +145,8 @@ export const PlansTable = ({ refineCoreProps }: Props) => {
         })}
       </div>
 
-      <div className="flex items-center justify-between border-t px-4 py-4">
-        <div className="text-sm text-gray-500">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t px-4 py-4">
+        <div className="text-sm text-gray-500 text-center sm:text-left">
           Hiển thị
           {' '}
           {pageIndex * pageSize + 1}
@@ -169,23 +167,28 @@ export const PlansTable = ({ refineCoreProps }: Props) => {
             size="icon"
             onClick={() => previousPage()}
             disabled={!getCanPreviousPage()}
+            className="h-8 w-8"
           >
             <ChevronLeftIcon className="h-4 w-4" />
           </Button>
-          {getPageOptions().map(page => (
-            <Button
-              key={page}
-              variant={pageIndex === page ? 'default' : 'outline'}
-              onClick={() => setPageIndex(page)}
-            >
-              {page + 1}
-            </Button>
-          ))}
+          <div className="flex items-center gap-1">
+            {getPageOptions().map(page => (
+              <Button
+                key={page}
+                variant={pageIndex === page ? 'default' : 'outline'}
+                onClick={() => setPageIndex(page)}
+                className="h-8 w-8 p-0"
+              >
+                {page + 1}
+              </Button>
+            ))}
+          </div>
           <Button
             variant="outline"
             size="icon"
             onClick={() => nextPage()}
             disabled={!getCanNextPage()}
+            className="h-8 w-8"
           >
             <ChevronRightIcon className="h-4 w-4" />
           </Button>

@@ -13,38 +13,18 @@ import {
   PhoneIcon,
 } from '@/components/icons';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useGetIdentity } from '@refinedev/core';
 import { useTable } from '@refinedev/react-table';
 import { flexRender } from '@tanstack/react-table';
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 type Props = {
   refineCoreProps?: Partial<useTableProps<Order, HttpError, Order>>;
 };
 
-const statusOrder = {
-  Pending: 1,
-  PendingConfirmation: 2,
-  Deposit: 3,
-  Paid: 4,
-  Cancel: 5,
-} as const;
-
-type StatusOrder = typeof statusOrder;
-type StatusKey = keyof StatusOrder;
-
 export const OrdersTable = ({ refineCoreProps }: Props) => {
   const { data: user } = useGetIdentity<IIdentity>();
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const columns = useMemo<ColumnDef<Order>[]>(
     () => [
@@ -57,19 +37,19 @@ export const OrdersTable = ({ refineCoreProps }: Props) => {
           return (
             <div className="block">
               <Link href={`/orders/${order.id}`} className="block">
-                <div className="group relative flex flex-col overflow-hidden rounded-lg border bg-primary/5 shadow-sm transition-all hover:shadow-md">
-                  <div className="flex flex-1 flex-col p-4">
+                <div className="group relative flex flex-col overflow-hidden rounded-2xl bg-card p-4 shadow-sm transition-all hover:shadow-md">
+                  <div className="flex flex-1 flex-col">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-base font-bold text-foreground">
+                        <h3 className="text-base font-semibold text-foreground">
                           Đơn hàng #
                           {order.id}
                         </h3>
-                        <p className="mt-1 text-sm text-foreground">
+                        <p className="mt-1 text-sm text-muted-foreground">
                           {order.plant_name}
                         </p>
                       </div>
-                      <span className={`rounded-full px-3 py-1 text-sm font-medium ${
+                      <span className={`rounded-full px-3 py-1 text-xs font-medium ${
                         order.status === 'Deposit'
                           ? 'bg-yellow-100 text-yellow-800'
                           : order.status === 'PendingConfirmation'
@@ -93,36 +73,36 @@ export const OrdersTable = ({ refineCoreProps }: Props) => {
                       </span>
                     </div>
 
-                    <div className="mt-4 grid grid-cols-2 gap-4 border-t border-gray-100 pt-4">
-                      <div className="flex items-center gap-2 text-sm text-foreground">
+                    <div className="mt-4 grid grid-cols-2 gap-4 border-t pt-4">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <PackageIcon className="h-4 w-4" />
                         <span>{order.packaging_type_name}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-foreground">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <CalendarIcon className="h-4 w-4" />
                         <span>{new Date(order.estimate_pick_up_date).toLocaleDateString('vi-VN')}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-foreground">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <MapPinIcon className="h-4 w-4" />
                         <span className="truncate">{order.address}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-foreground">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <PhoneIcon className="h-4 w-4" />
                         <span>{order.phone}</span>
                       </div>
                     </div>
 
-                    <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
+                    <div className="mt-4 flex items-center justify-between border-t pt-4">
                       <div>
-                        <p className="text-sm text-foreground">Số lượng đặt hàng</p>
-                        <p className="text-base font-semibold text-pretty">
+                        <p className="text-sm text-muted-foreground">Số lượng đặt hàng</p>
+                        <p className="text-base font-semibold text-foreground">
                           {order.preorder_quantity}
                           {' '}
                           kg
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm text-foreground">Tiền đặt cọc</p>
+                        <p className="text-sm text-muted-foreground">Tiền đặt cọc</p>
                         <p className="text-base font-semibold text-primary">
                           {order.deposit_price.toLocaleString('vi-VN')}
                           đ
@@ -150,6 +130,7 @@ export const OrdersTable = ({ refineCoreProps }: Props) => {
     getPageOptions,
     nextPage,
     previousPage,
+    setPageIndex,
   } = useTable<Order>({
     columns,
     refineCoreProps: {
@@ -162,13 +143,6 @@ export const OrdersTable = ({ refineCoreProps }: Props) => {
             operator: 'eq',
             value: user?.id,
           },
-          ...(statusFilter !== 'all'
-            ? [{
-                field: 'status',
-                operator: 'eq' as const,
-                value: statusFilter,
-              }]
-            : []),
         ],
       },
       initialPageSize: 6,
@@ -179,31 +153,15 @@ export const OrdersTable = ({ refineCoreProps }: Props) => {
     },
   });
 
-  const rows = useMemo(() => {
-    const sortedRows = getRowModel().rows;
-    return sortedRows.sort((a, b) => {
-      const statusA = statusOrder[a.original.status as StatusKey] || 999;
-      const statusB = statusOrder[b.original.status as StatusKey] || 999;
-
-      if (statusA !== statusB) {
-        return statusA - statusB;
-      }
-
-      const dateA = new Date(a.original.created_at).getTime();
-      const dateB = new Date(b.original.created_at).getTime();
-
-      return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
-    });
-  }, [getRowModel().rows, sortOrder]);
-
+  const rows = getRowModel().rows;
   const pageIndex = pagination?.pageIndex ?? 0;
 
   if (rows.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
-        <InboxIcon className="h-12 w-12 text-gray-400" />
-        <h3 className="mt-2 text-lg font-medium text-gray-900">Không có đơn hàng nào</h3>
-        <p className="mt-1 text-sm text-foreground">
+      <div className="flex flex-col items-center justify-center rounded-2xl bg-card p-8 text-center">
+        <InboxIcon className="h-12 w-12 text-muted-foreground" />
+        <h3 className="mt-2 text-lg font-medium text-foreground">Không có đơn hàng nào</h3>
+        <p className="mt-1 text-sm text-muted-foreground">
           Hiện tại không có đơn hàng nào. Vui lòng thử lại sau.
         </p>
       </div>
@@ -212,94 +170,59 @@ export const OrdersTable = ({ refineCoreProps }: Props) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-4 w-4"
-            >
-              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-            </svg>
-            <Select
-              value={statusFilter}
-              onValueChange={setStatusFilter}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Lọc theo trạng thái" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tất cả</SelectItem>
-                <SelectItem value="Pending">Chờ thanh toán</SelectItem>
-                <SelectItem value="PendingConfirmation">Chờ xác nhận</SelectItem>
-                <SelectItem value="Deposit">Đặt cọc</SelectItem>
-                <SelectItem value="Paid">Đã thanh toán</SelectItem>
-                <SelectItem value="Cancel">Đã hủy</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-2">
-            <Select
-              value={sortOrder}
-              onValueChange={(value: 'asc' | 'desc') => setSortOrder(value)}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Sắp xếp theo ngày" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="desc">Mới nhất</SelectItem>
-                <SelectItem value="asc">Cũ nhất</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
-
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {rows.map(row => (
-          <div key={row.id}>
+          <div key={row.id} className="w-full">
             {row.getVisibleCells().map(cell => (
-              flexRender(cell.column.columnDef.cell, cell.getContext())
+              <div key={cell.id} className="w-full">
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </div>
             ))}
           </div>
         ))}
       </div>
 
-      <div className="flex items-center justify-between border-t border-gray-200 pt-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t px-4 py-4">
+        <div className="text-sm text-muted-foreground text-center sm:text-left">
+          Trang
+          {' '}
+          {pageIndex + 1}
+          {' '}
+          của
+          {' '}
+          {getPageOptions().length}
+        </div>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            size="sm"
+            size="icon"
             onClick={() => previousPage()}
             disabled={!getCanPreviousPage()}
+            className="h-8 w-8"
           >
             <ChevronLeftIcon className="h-4 w-4" />
           </Button>
+          <div className="flex items-center gap-1">
+            {getPageOptions().map(page => (
+              <Button
+                key={page}
+                variant={pageIndex === page ? 'default' : 'outline'}
+                onClick={() => setPageIndex(page)}
+                className="h-8 w-8 p-0"
+              >
+                {page + 1}
+              </Button>
+            ))}
+          </div>
           <Button
             variant="outline"
-            size="sm"
+            size="icon"
             onClick={() => nextPage()}
             disabled={!getCanNextPage()}
+            className="h-8 w-8"
           >
             <ChevronRightIcon className="h-4 w-4" />
           </Button>
-          <span className="text-sm text-gray-700">
-            Trang
-            {' '}
-            {pageIndex + 1}
-            {' '}
-            của
-            {' '}
-            {getPageOptions().length}
-          </span>
         </div>
       </div>
     </div>

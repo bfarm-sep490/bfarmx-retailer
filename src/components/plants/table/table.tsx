@@ -52,44 +52,48 @@ export const PlantsTable = ({ refineCoreProps, showFilters = false }: Props) => 
                     />
                   </div>
 
-                  <div className="mt-4 space-y-2">
-                    <h3 className="text-sm font-bold text-foreground">
-                      {plant.plant_name}
-                    </h3>
-                    <div className="flex flex-wrap gap-1">
-                      <Badge variant="outline" className="text-xs">
+                  <div className="mt-4 space-y-3">
+                    <div className="space-y-1">
+                      <h3 className="text-base font-semibold text-foreground line-clamp-1">
+                        {plant.plant_name}
+                      </h3>
+                      <Badge variant="outline" className="text-xs bg-primary/5 text-primary border-primary/20">
                         {plant.type}
                       </Badge>
+                    </div>
 
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                        <DollarSign className="h-4 w-4 text-primary" />
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3">
+                        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                          <DollarSign className="h-4 w-4 text-primary" />
+                        </div>
+                        <div>
+                          <div className="text-xs text-muted-foreground">Giá bán</div>
+                          <div className="text-sm font-semibold text-primary">
+                            {plant.base_price.toLocaleString('vi-VN')}
+                            đ/kg
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="text-xs text-muted-foreground">Giá bán</div>
-                        <div className="text-sm font-bold text-primary">
-                          {plant.base_price.toLocaleString('vi-VN')}
-                          đ/kg
+
+                      <div className="flex items-center gap-3">
+                        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Clock className="h-4 w-4 text-primary" />
+                        </div>
+                        <div>
+                          <div className="text-xs text-muted-foreground">Thời gian bảo quản</div>
+                          <div className="text-sm font-semibold text-foreground">
+                            {plant.preservation_day}
+                            {' '}
+                            ngày
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Clock className="h-4 w-4 text-primary" />
-                      </div>
-                      <div>
-                        <div className="text-xs text-muted-foreground">Thời gian bảo quản</div>
-                        <div className="text-sm font-semibold text-foreground">
-                          {plant.preservation_day}
-                          {' '}
-                          ngày
-                        </div>
-                      </div>
-                    </div>
+
                     <Button
                       size="sm"
-                      className="w-full bg-primary hover:bg-primary/90"
+                      className="w-full bg-primary hover:bg-primary/90 transition-colors"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -179,7 +183,6 @@ export const PlantsTable = ({ refineCoreProps, showFilters = false }: Props) => 
           comparison = plantA.quantity - plantB.quantity;
           break;
         case 'createdAt':
-          // Fallback to name sorting if createdAt is not available
           comparison = plantA.plant_name.localeCompare(plantB.plant_name);
           break;
         default:
@@ -208,13 +211,13 @@ export const PlantsTable = ({ refineCoreProps, showFilters = false }: Props) => 
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {filteredRows.map((row) => {
           return (
-            <div key={row.id}>
+            <div key={row.id} className="w-full">
               {row.getVisibleCells().map((cell) => {
                 return (
-                  <div key={cell.id}>
+                  <div key={cell.id} className="w-full">
                     {flexRender(
                       cell.column.columnDef.cell,
                       cell.getContext(),
@@ -238,8 +241,8 @@ export const PlantsTable = ({ refineCoreProps, showFilters = false }: Props) => 
             </div>
           )
         : (
-            <div className="flex items-center justify-between border-t px-4 py-4">
-              <div className="text-sm text-muted-foreground">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t px-4 py-4">
+              <div className="text-sm text-muted-foreground text-center sm:text-left">
                 Hiển thị
                 {' '}
                 {pageIndex * pageSize + 1}
@@ -260,23 +263,28 @@ export const PlantsTable = ({ refineCoreProps, showFilters = false }: Props) => 
                   size="icon"
                   onClick={() => previousPage()}
                   disabled={!getCanPreviousPage()}
+                  className="h-8 w-8"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                {getPageOptions().map(page => (
-                  <Button
-                    key={page}
-                    variant={pageIndex === page ? 'default' : 'outline'}
-                    onClick={() => setPageIndex(page)}
-                  >
-                    {page + 1}
-                  </Button>
-                ))}
+                <div className="flex items-center gap-1">
+                  {getPageOptions().map(page => (
+                    <Button
+                      key={page}
+                      variant={pageIndex === page ? 'default' : 'outline'}
+                      onClick={() => setPageIndex(page)}
+                      className="h-8 w-8 p-0"
+                    >
+                      {page + 1}
+                    </Button>
+                  ))}
+                </div>
                 <Button
                   variant="outline"
                   size="icon"
                   onClick={() => nextPage()}
                   disabled={!getCanNextPage()}
+                  className="h-8 w-8"
                 >
                   <ChevronRight className="h-4 w-4" />
                 </Button>
