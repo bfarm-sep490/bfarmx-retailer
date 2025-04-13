@@ -75,7 +75,7 @@ export const PlansTable = ({ refineCoreProps }: Props) => {
                     { title: `Seed Quantity: ${plan.seed_quantity}`, completed: true },
                   ]}
                   qr_code={plan.qr_code}
-                  contract_address={plan.contract_address}
+                  contract_address={plan?.contract_address}
                 />
               </div>
             </div>

@@ -122,7 +122,7 @@ export function ProjectStatusCard({
                   {status}
                 </div>
               </Badge>
-              <h3 className="text-2xl font-semibold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+              <h3 className="text-2xl truncate max-w-[200px] font-semibold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
                 {title}
               </h3>
             </div>
@@ -250,9 +250,9 @@ export function ProjectStatusCard({
             <span className="flex items-center gap-1">
               <span className="text-gray-400">Contract:</span>
               <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
-                {contract_address.slice(0, 6)}
+                {contract_address?.slice(0, 6)}
                 ...
-                {contract_address.slice(-4)}
+                {contract_address?.slice(-4)}
               </span>
             </span>
           </div>
