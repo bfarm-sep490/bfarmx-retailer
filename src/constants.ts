@@ -1,4 +1,4 @@
-export const API_URL = 'https://api.outfit4rent.online/api';
+export const API_URL = 'https://api.bfarmx.space/api';
 
 export const TRANSLATIONS_BON_APPETIT = [
   '😀',

@@ -81,7 +81,7 @@ export const OrderDetail: React.FC<OrderPageProps> = ({ useShowProps }) => {
   const handlePaymentClick = async () => {
     try {
       const paymentResponse = await axios.post<PaymentResponse>(
-        'https://api.outfit4rent.online/api/payments/deposit-payment/payos',
+        'https://api.bfarmx.space/api/payments/deposit-payment/payos',
         {
           order_id: order?.id,
           amount: order?.deposit_price,
@@ -111,7 +111,7 @@ export const OrderDetail: React.FC<OrderPageProps> = ({ useShowProps }) => {
   const handleCancelOrder = async () => {
     try {
       const response = await axios.put(
-        `https://api.outfit4rent.online/api/orders/${order?.id}/status?status=Cancel`,
+        `https://api.bfarmx.space/api/orders/${order?.id}/status?status=Cancel`,
 
       );
 

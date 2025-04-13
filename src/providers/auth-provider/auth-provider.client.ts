@@ -7,7 +7,7 @@ import Cookies from 'js-cookie';
 export const TOKEN_KEY = 'bfarmx-auth';
 export const USER_KEY = 'bfarmx-user';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.outfit4rent.online/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.bfarmx.space/api';
 const authApiClient = axios.create({
   baseURL: `${API_URL}`,
   headers: {
