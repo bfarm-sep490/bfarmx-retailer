@@ -65,7 +65,7 @@ export const OrderDetail: React.FC<OrderPageProps> = ({ useShowProps }) => {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const [payOSConfig, setPayOSConfig] = useState({
-    RETURN_URL: 'http://localhost:3000/payment-success',
+    RETURN_URL: 'https://bfarmx.space/payment-success',
     ELEMENT_ID: 'embedded-payment-container',
     CHECKOUT_URL: '',
     embedded: true,
