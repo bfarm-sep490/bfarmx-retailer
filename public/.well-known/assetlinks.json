@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "bfarm-mobile",
+      "package_name": "com.bfarmx.app",
+      "sha256_cert_fingerprints": [
+        "20:8C:12:D4:D0:7F:7D:A1:65:28:A5:F5:A9:02:27:27:30:E2:BA:89:27:2F:EF:09:B2:7C:45:2B:E2:20:69:70"
+      ]
+    }
+  }
+]
