@@ -1,11 +1,8 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import { RefineConfig } from '@/components/refine-config';
 import { ThemeProvider } from '@/components/theme-provider';
-import { authProviderClient } from '@/providers/auth-provider/auth-provider.client';
-import { dataProvider } from '@/providers/data-provider/client';
-import { Refine } from '@refinedev/core';
-import { RefineKbar, RefineKbarProvider } from '@refinedev/kbar';
-import routerProvider from '@refinedev/nextjs-router';
+import { RefineKbarProvider } from '@refinedev/kbar';
 import { Suspense } from 'react';
 import 'src/styles/globals.css';
 
@@ -27,38 +24,15 @@ export default function RootLayout({
       <body>
         <Suspense>
           <RefineKbarProvider>
-            <Refine
-              options={{
-                syncWithLocation: true,
-                warnWhenUnsavedChanges: true,
-                liveMode: 'auto',
-              }}
-              resources={[
-                {
-                  name: 'orders',
-                  show: '/orders/:id',
-                },
-                {
-                  name: 'plans',
-                  list: '/plans',
-                  show: '/plans/:id',
-                },
-              ]}
-              routerProvider={routerProvider}
-              dataProvider={dataProvider}
-              authProvider={authProviderClient}
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem
+              disableTransitionOnChange
+              storageKey="bfarmx-theme"
             >
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="light"
-                enableSystem
-                disableTransitionOnChange
-                storageKey="bfarmx-theme"
-              >
-                {children}
-              </ThemeProvider>
-              <RefineKbar />
-            </Refine>
+              <RefineConfig>{children}</RefineConfig>
+            </ThemeProvider>
           </RefineKbarProvider>
         </Suspense>
       </body>
