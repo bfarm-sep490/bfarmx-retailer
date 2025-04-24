@@ -32,7 +32,7 @@ export default function AuthLayout({ children }: PropsWithChildren) {
               Chào mừng đến với BFarmX
             </h1>
             <p className="text-xl text-emerald-700 dark:text-emerald-300 leading-relaxed">
-              Nền tảng quản lý nông trại dựa trên công nghệ blockchain
+              Nền tảng quản lý nông trại áp dụng công nghệ blockchain
             </p>
           </div>
         </div>
