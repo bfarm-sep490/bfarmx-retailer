@@ -266,7 +266,7 @@ export const Header = () => {
         className="bg-white dark:bg-neutral-900 rounded-full text-emerald-900 dark:text-emerald-100 shadow-lg flex items-center justify-between absolute bottom-8 left-[50%] -translate-x-[50%] border border-emerald-100 dark:border-emerald-800"
       >
         <MenuButton setOpen={handleMenuOpen} open={menuOpen} />
-        <div className="flex items-center gap-2 sm:gap-4 px-2 sm:px-4">
+        <div className="flex items-center gap-0 sm:gap-4 px-0 sm:px-4">
           <Link text="Home" Icon={Home} href="/" />
           <Link text="Seed" Icon={Sprout} href="/plants" />
           <Link

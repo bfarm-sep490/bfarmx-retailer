@@ -339,7 +339,7 @@ export const NotificationDropdown = ({ open, setOpen }: NotificationDropdownProp
             animate="open"
             exit="closed"
             style={{ transformOrigin: 'bottom' }}
-            className="absolute bottom-[70px] sm:bottom-[83px] left-[50%] translate-x-[-163px] sm:translate-x-[-205px]"
+            className="absolute bottom-[70px] sm:bottom-[83px] left-[50%] translate-x-[-153px] sm:translate-x-[-205px]"
           >
             {content}
           </motion.div>
