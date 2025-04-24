@@ -7,15 +7,17 @@ import {
   Home,
   LogOut,
   Menu as MenuIcon,
+  Moon,
   Package,
   Settings,
   Sprout,
+  Sun,
   User,
   X,
 } from 'lucide-react';
-
+import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NotificationDropdown } from './notification-dropdown';
 
 const iconVariants = {
@@ -83,12 +85,11 @@ const Link = ({ text, Icon, badge, onClick, href }: { text: string; Icon: IconTy
     <motion.button
       type="button"
       onClick={handleClick}
-      className="text-sm cursor-pointer w-16 hover:primary transition-all duration-200 flex flex-col gap-1.5 items-center relative group"
-      whileHover={{ y: -2 }}
+      className="text-sm cursor-pointer w-20 sm:w-24 hover:primary transition-all duration-200 flex flex-col gap-1.5 items-center relative group"
       whileTap={{ scale: 0.95 }}
     >
       <div className="relative">
-        <Icon className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
+        <Icon className="w-6 h-6 sm:w-7 sm:h-7 transition-transform duration-200 group-hover:scale-110" />
         <div className="absolute inset-0 bg-emerald-50 dark:bg-emerald-950/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 -z-10" />
         {badge && (
           <div className="absolute -top-2 -right-2 bg-emerald-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -96,7 +97,7 @@ const Link = ({ text, Icon, badge, onClick, href }: { text: string; Icon: IconTy
           </div>
         )}
       </div>
-      <span className="text-xs font-medium">{text}</span>
+      <span className="text-xs sm:text-sm font-medium">{text}</span>
     </motion.button>
   );
 };
@@ -112,7 +113,7 @@ const MenuButton = ({
     <button
       type="button"
       onClick={() => setOpen(!open)}
-      className="text-xl font-bold rounded-full h-full bg-emerald-500 text-white p-4 hover:bg-emerald-600 transition-colors"
+      className="text-xl font-bold rounded-full h-full bg-emerald-500 text-white p-5 sm:p-6 hover:bg-emerald-600 transition-colors"
     >
       <motion.div
         whileHover={{ scale: 1.1 }}
@@ -130,7 +131,7 @@ const MenuButton = ({
                   exit="exit"
                   transition={{ duration: 0.125, ease: 'linear' }}
                 >
-                  <X />
+                  <X className="w-6 h-6 sm:w-7 sm:h-7" />
                 </motion.span>
               )
             : (
@@ -143,7 +144,7 @@ const MenuButton = ({
                   exit="exit"
                   transition={{ duration: 0.125, ease: 'linear' }}
                 >
-                  <MenuIcon />
+                  <MenuIcon className="w-6 h-6 sm:w-7 sm:h-7" />
                 </motion.span>
               )}
         </AnimatePresence>
@@ -160,6 +161,13 @@ const Menu = () => {
   const { data: user } = useGetIdentity<IIdentity>();
   const translate = useTranslate();
   const { warnWhen, setWarnWhen } = useWarnAboutChange();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const handleLogout = () => {
     if (warnWhen) {
       // eslint-disable-next-line no-alert
@@ -171,6 +179,11 @@ const Menu = () => {
       mutateLogout();
     }
   };
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
   return (
     <motion.div
       variants={menuVariants}
@@ -193,6 +206,27 @@ const Menu = () => {
         <MenuLink text="Đơn hàng của tôi" Icon={Package} />
         <MenuLink text="Sản phẩm yêu thích" Icon={Heart} />
         <MenuLink text="Cài đặt tài khoản" Icon={Settings} />
+        {mounted && (
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="text-sm hover:text-emerald-500 transition-colors flex items-center gap-3 py-2.5 px-4 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950/50"
+          >
+            {theme === 'dark'
+              ? (
+                  <>
+                    <Sun className="w-5 h-5" />
+                    Chế độ sáng
+                  </>
+                )
+              : (
+                  <>
+                    <Moon className="w-5 h-5" />
+                    Chế độ tối
+                  </>
+                )}
+          </button>
+        )}
       </div>
 
       {/* Logout Button */}
@@ -232,7 +266,7 @@ export const Header = () => {
         className="bg-white dark:bg-neutral-900 rounded-full text-emerald-900 dark:text-emerald-100 shadow-lg flex items-center justify-between absolute bottom-8 left-[50%] -translate-x-[50%] border border-emerald-100 dark:border-emerald-800"
       >
         <MenuButton setOpen={handleMenuOpen} open={menuOpen} />
-        <div className="flex items-center gap-2 px-4">
+        <div className="flex items-center gap-2 sm:gap-4 px-2 sm:px-4">
           <Link text="Home" Icon={Home} href="/" />
           <Link text="Seed" Icon={Sprout} href="/plants" />
           <Link

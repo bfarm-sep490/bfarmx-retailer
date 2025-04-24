@@ -1,14 +1,25 @@
+'use client';
+
 import type { Order } from '@/types';
-import type { GetListResponse } from '@refinedev/core';
 import Loading from '@/app/loading';
 import { OrderFiltersWrapper } from '@/components/orders/filters/filters-wrapper';
 import { OrdersTable } from '@/components/orders/table';
-import { dataProvider } from '@/providers/data-provider/server';
 import { Separator } from '@radix-ui/react-separator';
+import { useList } from '@refinedev/core';
 import { Suspense } from 'react';
 
-export default async function OrdersPage() {
-  const { orders } = await getData();
+export default function OrdersPage() {
+  const { data: orderData, isLoading } = useList<Order>({
+    resource: 'orders',
+    pagination: {
+      mode: 'client',
+      pageSize: 6,
+    },
+  });
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div className="page mx-auto flex md:max-w-[80vw] max-w-[100vw] flex-col items-center justify-start lg:w-full lg:max-w-container lg:grid-cols-[296px_auto] lg:items-stretch lg:px-6 lg:grid">
@@ -39,7 +50,7 @@ export default async function OrdersPage() {
           <OrdersTable
             refineCoreProps={{
               queryOptions: {
-                initialData: orders,
+                initialData: orderData,
               },
             }}
           />
@@ -47,23 +58,4 @@ export default async function OrdersPage() {
       </div>
     </div>
   );
-}
-async function getData() {
-  try {
-    const orderData: GetListResponse<Order> = await dataProvider.getList({
-      resource: 'orders',
-    });
-
-    return {
-      orders: orderData,
-    };
-  } catch (error) {
-    console.error(error);
-    return {
-      orders: {
-        total: 0,
-        data: [],
-      },
-    };
-  }
 }

@@ -45,7 +45,7 @@ export const PlansTable = ({ refineCoreProps }: Props) => {
               case 'Cancelled':
                 return <AlertCircle className="h-4 w-4 text-red-500" />;
               default:
-                return <Clock className="h-4 w-4 text-gray-500" />;
+                return <Clock className="h-4 w-4 text-muted-foreground" />;
             }
           };
 
@@ -58,13 +58,13 @@ export const PlansTable = ({ refineCoreProps }: Props) => {
                 status={plan.status}
                 statusIcon={getStatusIcon(plan.status)}
                 metadata={{
-                  plant: { name: plan.plant_name, icon: <Leaf className="h-4 w-4" /> },
-                  yield: { name: plan.yield_name, icon: <Package className="h-4 w-4" /> },
-                  expert: { name: plan.expert_name, icon: <User className="h-4 w-4" /> },
+                  plant: { name: plan.plant_name, icon: <Leaf className="h-4 w-4 text-muted-foreground" /> },
+                  yield: { name: plan.yield_name, icon: <Package className="h-4 w-4 text-muted-foreground" /> },
+                  expert: { name: plan.expert_name, icon: <User className="h-4 w-4 text-muted-foreground" /> },
                   timeline: {
                     start: plan.start_date,
                     end: plan.end_date,
-                    icon: <Calendar className="h-4 w-4" />,
+                    icon: <Calendar className="h-4 w-4 text-muted-foreground" />,
                   },
                 }}
                 tasks={[
@@ -115,9 +115,9 @@ export const PlansTable = ({ refineCoreProps }: Props) => {
   if (rows.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
-        <InboxIcon className="h-12 w-12 text-gray-400" />
-        <h3 className="mt-2 text-lg font-medium text-gray-900">Không có kế hoạch nào</h3>
-        <p className="mt-1 text-sm text-gray-500">
+        <InboxIcon className="h-12 w-12 text-muted-foreground" />
+        <h3 className="mt-2 text-lg font-medium text-foreground">Không có kế hoạch nào</h3>
+        <p className="mt-1 text-sm text-muted-foreground">
           Hiện tại không có kế hoạch nào có sẵn. Vui lòng thử lại sau.
         </p>
       </div>
@@ -146,7 +146,7 @@ export const PlansTable = ({ refineCoreProps }: Props) => {
       </div>
 
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t px-4 py-4">
-        <div className="text-sm text-gray-500 text-center sm:text-left">
+        <div className="text-sm text-muted-foreground text-center sm:text-left">
           Hiển thị
           {' '}
           {pageIndex * pageSize + 1}

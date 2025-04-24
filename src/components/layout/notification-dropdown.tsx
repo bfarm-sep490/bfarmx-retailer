@@ -13,7 +13,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Bell, CheckCircle2, Clock } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import 'dayjs/locale/vi';
 
 dayjs.extend(relativeTime);
@@ -32,6 +32,7 @@ type Notification = {
 const menuVariants = {
   open: {
     scale: 1,
+    opacity: 1,
     transition: {
       when: 'beforeChildren',
       staggerChildren: 0.05,
@@ -39,21 +40,11 @@ const menuVariants = {
   },
   closed: {
     scale: 0,
+    opacity: 0,
     transition: {
       when: 'afterChildren',
       staggerChildren: 0.05,
     },
-  },
-};
-
-const menuLinkVariants = {
-  open: {
-    y: 0,
-    opacity: 1,
-  },
-  closed: {
-    y: -15,
-    opacity: 0,
   },
 };
 
@@ -62,11 +53,102 @@ type NotificationDropdownProps = {
   setOpen: (open: boolean) => void;
 };
 
+type NotificationItemProps = {
+  item: Notification;
+  onMarkAsRead: (id: number) => void;
+};
+
+const NotificationItem = ({ item, onMarkAsRead }: NotificationItemProps) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const messageRef = useRef<HTMLParagraphElement>(null);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+
+  useEffect(() => {
+    if (messageRef.current) {
+      setIsOverflowing(
+        messageRef.current.scrollHeight > messageRef.current.clientHeight,
+      );
+    }
+  }, [item.message]);
+
+  return (
+    <button
+      type="button"
+      className={`w-full text-left flex items-start gap-3 p-4 rounded-lg transition-colors hover:bg-emerald-50/50 dark:hover:bg-emerald-950/30 ${
+        !item.is_read ? 'bg-emerald-50 dark:bg-emerald-950/50 cursor-pointer' : 'cursor-default'
+      }`}
+      onClick={() => !item.is_read && onMarkAsRead(item.id)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          !item.is_read && onMarkAsRead(item.id);
+        }
+      }}
+    >
+      <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center flex-shrink-0">
+        <Bell className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-emerald-900 dark:text-emerald-100 truncate">
+          {item.title}
+        </p>
+        <div className="relative">
+          <p
+            ref={messageRef}
+            className={`text-xs text-emerald-600 dark:text-emerald-400 transition-all duration-200 ${
+              isExpanded ? '' : 'line-clamp-2'
+            }`}
+          >
+            {item.message}
+          </p>
+          {isOverflowing && (
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsExpanded(!isExpanded);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.stopPropagation();
+                  setIsExpanded(!isExpanded);
+                }
+              }}
+              className="text-xs text-emerald-500 hover:text-emerald-600 dark:text-emerald-400 dark:hover:text-emerald-300 mt-1 cursor-pointer"
+            >
+              {isExpanded ? 'Thu gọn' : 'Xem thêm'}
+            </div>
+          )}
+        </div>
+        <div className="flex items-center gap-2 mt-1">
+          {item.is_read
+            ? (
+                <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+              )
+            : (
+                <Clock className="w-3 h-3 text-yellow-500" />
+              )}
+          <span className="text-xs text-emerald-600 dark:text-emerald-400">
+            {dayjs(item.created_date).fromNow()}
+          </span>
+        </div>
+      </div>
+    </button>
+  );
+};
+
 export const NotificationDropdown = ({ open, setOpen }: NotificationDropdownProps) => {
   const { data: user } = useGetIdentity<IIdentity>();
   const [activeTab, setActiveTab] = useState('unread');
+  const [showAll, setShowAll] = useState(false);
   const apiUrl = useApiUrl();
   const invalidate = useInvalidate();
+
+  useEffect(() => {
+    if (!open) {
+      setShowAll(false);
+    }
+  }, [open]);
 
   const { data: notificationsData, isLoading } = useList<Notification>({
     resource: `retailers/${user?.id}/notifications`,
@@ -81,6 +163,9 @@ export const NotificationDropdown = ({ open, setOpen }: NotificationDropdownProp
 
   const notifications = notificationsData?.data || [];
   const unreadNotifications = notifications.filter(n => !n.is_read);
+  const displayedNotifications = showAll
+    ? (activeTab === 'all' ? notifications : unreadNotifications)
+    : (activeTab === 'all' ? notifications.slice(0, 4) : unreadNotifications.slice(0, 4));
 
   const handleMarkAsRead = (notificationId: number) => {
     markAsRead(
@@ -121,44 +206,12 @@ export const NotificationDropdown = ({ open, setOpen }: NotificationDropdownProp
     );
   };
 
-  const renderNotificationItem = (item: Notification) => (
-    <motion.div
-      key={item.id}
-      variants={menuLinkVariants}
-      className={`flex items-start gap-3 p-4 rounded-lg transition-colors ${
-        !item.is_read ? 'bg-emerald-50 dark:bg-emerald-950/50' : ''
-      }`}
-      onClick={() => !item.is_read && handleMarkAsRead(item.id)}
-    >
-      <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center">
-        <Bell className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-emerald-900 dark:text-emerald-100 truncate">
-          {item.title}
-        </p>
-        <p className="text-xs text-emerald-600 dark:text-emerald-400 line-clamp-2">
-          {item.message}
-        </p>
-        <div className="flex items-center gap-2 mt-1">
-          {item.is_read
-            ? (
-                <CheckCircle2 className="w-3 h-3 text-emerald-500" />
-              )
-            : (
-                <Clock className="w-3 h-3 text-yellow-500" />
-              )}
-          <span className="text-xs text-emerald-600 dark:text-emerald-400">
-            {dayjs(item.created_date).fromNow()}
-          </span>
-        </div>
-      </div>
-    </motion.div>
-  );
-
   const content = (
     <motion.div
       variants={menuVariants}
+      initial="closed"
+      animate="open"
+      exit="closed"
       style={{ transformOrigin: 'bottom', x: '-50%' }}
       className="p-6 rounded-2xl bg-white dark:bg-neutral-900 shadow-lg absolute bottom-[125%] left-[50%] flex flex-col w-[calc(100vw_-_48px)] max-w-md border border-emerald-100 dark:border-emerald-900"
     >
@@ -180,7 +233,10 @@ export const NotificationDropdown = ({ open, setOpen }: NotificationDropdownProp
       <div className="flex gap-2 mb-4">
         <button
           type="button"
-          onClick={() => setActiveTab('all')}
+          onClick={() => {
+            setActiveTab('all');
+            setShowAll(false);
+          }}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             activeTab === 'all'
               ? 'bg-emerald-100 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-100'
@@ -191,7 +247,10 @@ export const NotificationDropdown = ({ open, setOpen }: NotificationDropdownProp
         </button>
         <button
           type="button"
-          onClick={() => setActiveTab('unread')}
+          onClick={() => {
+            setActiveTab('unread');
+            setShowAll(false);
+          }}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             activeTab === 'unread'
               ? 'bg-emerald-100 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-100'
@@ -219,23 +278,35 @@ export const NotificationDropdown = ({ open, setOpen }: NotificationDropdownProp
             )
           : (
               <div className="space-y-2">
-                {activeTab === 'all'
-                  ? notifications.length > 0
-                    ? notifications.map(renderNotificationItem)
-                    : (
-                        <div className="flex flex-col items-center justify-center py-8 text-emerald-600 dark:text-emerald-400">
-                          <Bell className="w-8 h-8 mb-2" />
-                          <p className="text-sm">Không có thông báo</p>
-                        </div>
-                      )
-                  : unreadNotifications.length > 0
-                    ? unreadNotifications.map(renderNotificationItem)
-                    : (
-                        <div className="flex flex-col items-center justify-center py-8 text-emerald-600 dark:text-emerald-400">
-                          <Bell className="w-8 h-8 mb-2" />
-                          <p className="text-sm">Không có thông báo chưa đọc</p>
-                        </div>
-                      )}
+                {displayedNotifications.length > 0
+                  ? (
+                      <>
+                        {displayedNotifications.map(item => (
+                          <NotificationItem key={item.id} item={item} onMarkAsRead={handleMarkAsRead} />
+                        ))}
+                        {!showAll && (activeTab === 'all' ? notifications.length > 4 : unreadNotifications.length > 4) && (
+                          <button
+                            type="button"
+                            onClick={() => setShowAll(true)}
+                            className="w-full text-center py-2 text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300"
+                          >
+                            Xem thêm
+                            {' '}
+                            {activeTab === 'all' ? notifications.length - 4 : unreadNotifications.length - 4}
+                            {' '}
+                            thông báo
+                          </button>
+                        )}
+                      </>
+                    )
+                  : (
+                      <div className="flex flex-col items-center justify-center py-8 text-emerald-600 dark:text-emerald-400">
+                        <Bell className="w-8 h-8 mb-2" />
+                        <p className="text-sm">
+                          {activeTab === 'all' ? 'Không có thông báo' : 'Không có thông báo chưa đọc'}
+                        </p>
+                      </div>
+                    )}
               </div>
             )}
       </div>
@@ -247,17 +318,17 @@ export const NotificationDropdown = ({ open, setOpen }: NotificationDropdownProp
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="text-sm cursor-pointer w-16 hover:primary transition-all duration-200 flex flex-col gap-1.5 items-center relative group"
+        className="text-sm cursor-pointer w-20 sm:w-24 hover:primary transition-all duration-200 flex flex-col gap-1.5 items-center relative group"
       >
         <div className="relative">
-          <Bell className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
+          <Bell className="w-6 h-6 sm:w-7 sm:h-7 transition-transform duration-200 group-hover:scale-110" />
           {unreadNotifications.length > 0 && (
-            <div className="absolute -top-2 -right-2 bg-emerald-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+            <div className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground text-md rounded-full w-6 h-6 flex items-center justify-center">
               {unreadNotifications.length}
             </div>
           )}
         </div>
-        <span className="text-xs font-medium">Noti</span>
+        <span className="text-xs sm:text-sm font-medium">Noti</span>
       </button>
 
       <AnimatePresence>
@@ -267,8 +338,8 @@ export const NotificationDropdown = ({ open, setOpen }: NotificationDropdownProp
             initial="closed"
             animate="open"
             exit="closed"
-            style={{ transformOrigin: 'bottom', x: '-135px' }}
-            className="absolute bottom-[65px] left-[50%]"
+            style={{ transformOrigin: 'bottom' }}
+            className="absolute bottom-[70px] sm:bottom-[83px] left-[50%] translate-x-[-163px] sm:translate-x-[-205px]"
           >
             {content}
           </motion.div>

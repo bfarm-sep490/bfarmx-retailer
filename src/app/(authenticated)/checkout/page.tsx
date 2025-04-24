@@ -1,6 +1,7 @@
 'use client';
 
 import type { IIdentity } from '@/types';
+import type { BaseRecord, HttpError } from '@refinedev/core';
 import { ChevronLeftIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -11,9 +12,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { usePackagingTypes } from '@/hooks/usePackagingTypes';
 import { cn } from '@/lib/utils';
-import { dataProvider } from '@/providers/data-provider/server';
 import { useCartStore } from '@/store/cart';
-import { useGetIdentity } from '@refinedev/core';
+import { useCreate, useGetIdentity } from '@refinedev/core';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { CalendarIcon, CheckCircle2, Info, Loader2, Minus, Plus, User, X } from 'lucide-react';
@@ -26,6 +26,7 @@ import { useState } from 'react';
 export default function CheckoutPage() {
   const router = useRouter();
   const { data: user } = useGetIdentity<IIdentity>();
+  const { mutate: createOrder, isLoading } = useCreate<BaseRecord, HttpError>();
   const { items, updateQuantity, getTotalItems, getTotalPrice, clearCart } = useCartStore();
   const { packagingTypes, isLoading: isLoadingPackagingTypes } = usePackagingTypes();
   const [formData, setFormData] = useState({
@@ -35,36 +36,36 @@ export default function CheckoutPage() {
     packaging_type_id: 1,
     estimate_pick_up_date: new Date(),
   });
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
-    try {
-      const orderResponse = await dataProvider.create({
-        resource: 'orders',
-        variables: {
-          retailer_id: user?.id,
-          plant_id: items[0]?.plant.id,
-          packaging_type_id: formData.packaging_type_id,
-          deposit_price: getTotalPrice() * 0.3,
-          address: formData.address,
-          phone: formData.phone,
-          preorder_quantity: getTotalItems(),
-          estimate_pick_up_date: formData.estimate_pick_up_date.toISOString(),
-        },
-      });
-
-      if (orderResponse.data) {
+    createOrder({
+      resource: 'orders',
+      values: {
+        retailer_id: user?.id,
+        plant_id: items[0]?.plant.id,
+        packaging_type_id: formData.packaging_type_id,
+        deposit_price: getTotalPrice() * 0.3,
+        address: formData.address,
+        phone: formData.phone,
+        preorder_quantity: getTotalItems(),
+        estimate_pick_up_date: formData.estimate_pick_up_date.toISOString(),
+      },
+      successNotification: {
+        message: 'Đặt hàng thành công',
+        type: 'success',
+      },
+      errorNotification: {
+        message: 'Đặt hàng thất bại',
+        type: 'error',
+      },
+    }, {
+      onSuccess: (data) => {
         clearCart();
-        router.push(`/orders/${orderResponse.data.id}`);
-      }
-    } catch (error) {
-      console.error('Error creating order:', error);
-    } finally {
-      setIsLoading(false);
-    }
+        router.push(`/orders/${data.data.id}`);
+      },
+    });
   };
 
   if (items.length === 0) {

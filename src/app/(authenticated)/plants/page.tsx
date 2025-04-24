@@ -1,14 +1,32 @@
+'use client';
+
 import type { Plant } from '@/types';
-import type { GetListResponse } from '@refinedev/core';
 import Loading from '@/app/loading';
 import { PlantFiltersWrapper } from '@/components/plants/filters/filters-wrapper';
 import { PlantsTable } from '@/components/plants/table';
-import { dataProvider } from '@/providers/data-provider/server';
 import { Separator } from '@radix-ui/react-separator';
+import { useList } from '@refinedev/core';
 import { Suspense } from 'react';
 
-export default async function PlantsPage() {
-  const { plants } = await getData();
+export default function PlantsPage() {
+  const { data: plantData, isLoading } = useList<Plant>({
+    resource: 'plants',
+    filters: [
+      {
+        field: 'status',
+        operator: 'eq',
+        value: 'Available',
+      },
+    ],
+    pagination: {
+      mode: 'client',
+      pageSize: 6,
+    },
+  });
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div className="page mx-auto flex md:max-w-[80vw] max-w-[100vw] flex-col items-center justify-start lg:w-full lg:max-w-container lg:grid-cols-[296px_auto] lg:items-stretch lg:px-6 lg:grid">
@@ -39,7 +57,7 @@ export default async function PlantsPage() {
           <PlantsTable
             refineCoreProps={{
               queryOptions: {
-                initialData: plants,
+                initialData: plantData,
               },
               permanentFilter: [
                 {
@@ -54,31 +72,4 @@ export default async function PlantsPage() {
       </div>
     </div>
   );
-}
-
-async function getData() {
-  try {
-    const plantData: GetListResponse<Plant> = await dataProvider.getList({
-      resource: 'plants',
-      filters: [
-        {
-          field: 'status',
-          operator: 'eq',
-          value: 'Available',
-        },
-      ],
-    });
-
-    return {
-      plants: plantData,
-    };
-  } catch (error) {
-    console.error(error);
-    return {
-      plants: {
-        total: 0,
-        data: [],
-      },
-    };
-  }
 }

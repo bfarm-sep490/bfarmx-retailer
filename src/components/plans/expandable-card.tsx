@@ -106,15 +106,15 @@ export function ProjectStatusCard({
   const getStatusColor = (status: PlanStatus) => {
     switch (status) {
       case 'Completed':
-        return 'bg-emerald-100 text-emerald-600 border-emerald-200';
+        return 'bg-emerald-100 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800';
       case 'Ongoing':
-        return 'bg-sky-100 text-sky-600 border-sky-200';
+        return 'bg-sky-100 dark:bg-sky-900/20 text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-800';
       case 'Pending':
-        return 'bg-amber-100 text-amber-600 border-amber-200';
+        return 'bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800';
       case 'Cancelled':
-        return 'bg-rose-100 text-rose-600 border-rose-200';
+        return 'bg-rose-100 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800';
       default:
-        return 'bg-gray-100 text-gray-600 border-gray-200';
+        return 'bg-muted text-muted-foreground border-border';
     }
   };
 
@@ -135,7 +135,7 @@ export function ProjectStatusCard({
   return (
     <>
       <Card
-        className="w-full max-w-md cursor-pointer transition-all duration-300 hover:shadow-lg bg-gradient-to-br from-white to-gray-50 border border-gray-100 rounded-xl overflow-hidden group"
+        className="w-full max-w-md cursor-pointer transition-all duration-300 hover:shadow-lg bg-gradient-to-br from-background to-muted border rounded-xl overflow-hidden group"
         onClick={toggleExpand}
       >
         <CardHeader className="space-y-3 p-6">
@@ -148,7 +148,7 @@ export function ProjectStatusCard({
                     {status}
                   </div>
                 </Badge>
-                <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
+                <Badge variant="outline" className="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800">
                   <div className="flex items-center gap-1">
                     <Leaf className="h-3 w-3" />
                     {metadata.plant.name}
@@ -158,7 +158,7 @@ export function ProjectStatusCard({
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <h3 className="text-2xl font-semibold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent line-clamp-1 transition-all duration-200">
+                    <h3 className="text-2xl font-semibold text-foreground line-clamp-1 transition-all duration-200">
                       {title}
                     </h3>
                   </TooltipTrigger>
@@ -175,7 +175,7 @@ export function ProjectStatusCard({
                     <Button
                       size="icon"
                       variant="outline"
-                      className="h-8 w-8 rounded-full border-gray-200 hover:bg-gray-100 shrink-0"
+                      className="h-8 w-8 rounded-full border-border hover:bg-muted shrink-0"
                       onClick={handleViewQR}
                     >
                       <IconQrcode className="h-4 w-4" />
@@ -193,11 +193,11 @@ export function ProjectStatusCard({
         <CardContent className="p-6 pt-0">
           <div className="space-y-4">
             <div className="space-y-2">
-              <div className="flex justify-between text-sm text-gray-600">
+              <div className="flex justify-between text-sm text-muted-foreground">
                 <span>{formatDate(metadata.timeline.start)}</span>
                 <span>{formatDate(metadata.timeline.end)}</span>
               </div>
-              <div className="relative h-4 rounded-full bg-gray-100 overflow-hidden">
+              <div className="relative h-4 rounded-full bg-muted overflow-hidden">
                 <ProgressBar
                   value={currentProgress}
                   className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600"
@@ -209,7 +209,7 @@ export function ProjectStatusCard({
                   </span>
                 </div>
               </div>
-              <div className="flex justify-between text-xs text-gray-500">
+              <div className="flex justify-between text-xs text-muted-foreground">
                 <span>Bắt đầu</span>
                 <span>Kết thúc</span>
               </div>
@@ -231,23 +231,23 @@ export function ProjectStatusCard({
                     >
                       <div className="grid grid-cols-1 gap-3">
                         {metadata.yield.icon && (
-                          <div className="flex items-center gap-3 text-sm text-gray-600 bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-colors">
-                            <div className="p-2 bg-white rounded-lg shadow-sm">
+                          <div className="flex items-center gap-3 text-sm text-muted-foreground bg-muted p-3 rounded-lg hover:bg-muted/80 transition-colors">
+                            <div className="p-2 bg-background rounded-lg shadow-sm">
                               {metadata.yield.icon}
                             </div>
                             <div className="flex flex-col">
-                              <span className="text-xs text-gray-500">Sản lượng</span>
+                              <span className="text-xs text-muted-foreground">Sản lượng</span>
                               <span className="font-medium truncate">{metadata.yield.name}</span>
                             </div>
                           </div>
                         )}
                         {metadata.expert.icon && (
-                          <div className="flex items-center gap-3 text-sm text-gray-600 bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-colors">
-                            <div className="p-2 bg-white rounded-lg shadow-sm">
+                          <div className="flex items-center gap-3 text-sm text-muted-foreground bg-muted p-3 rounded-lg hover:bg-muted/80 transition-colors">
+                            <div className="p-2 bg-background rounded-lg shadow-sm">
                               {metadata.expert.icon}
                             </div>
                             <div className="flex flex-col">
-                              <span className="text-xs text-gray-500">Chuyên gia</span>
+                              <span className="text-xs text-muted-foreground">Chuyên gia</span>
                               <span className="font-medium truncate">{metadata.expert.name}</span>
                             </div>
                           </div>
@@ -255,12 +255,12 @@ export function ProjectStatusCard({
                       </div>
 
                       <div className="space-y-2">
-                        <h4 className="font-medium text-sm text-gray-900">Chi tiết kế hoạch</h4>
+                        <h4 className="font-medium text-sm text-foreground">Chi tiết kế hoạch</h4>
                         <div className="space-y-2">
                           {tasks.map((task, index) => (
                             <div
                               key={index}
-                              className="flex items-center justify-between text-sm bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-colors"
+                              className="flex items-center justify-between text-sm bg-muted p-3 rounded-lg hover:bg-muted/80 transition-colors"
                             >
                               <div className="flex items-center gap-2">
                                 {task.completed
@@ -268,9 +268,9 @@ export function ProjectStatusCard({
                                       <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
                                     )
                                   : (
-                                      <div className="h-4 w-4 rounded-full border-2 border-gray-300" />
+                                      <div className="h-4 w-4 rounded-full border-2 border-muted-foreground/30" />
                                     )}
-                                <span className="text-gray-600 truncate">{task.title}</span>
+                                <span className="text-muted-foreground truncate">{task.title}</span>
                               </div>
                             </div>
                           ))}
