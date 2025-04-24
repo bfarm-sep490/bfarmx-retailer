@@ -5,6 +5,8 @@ layer(base);
 
 @import 'tw-animate-css';
 
+@plugin 'tailwind-scrollbar';
+
 /*
   ---break---
 */

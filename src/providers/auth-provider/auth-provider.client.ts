@@ -4,8 +4,8 @@ import type { AuthProvider } from '@refinedev/core';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-export const TOKEN_KEY = 'bfarmx-auth';
-export const USER_KEY = 'bfarmx-user';
+export const TOKEN_KEY = 'bfarmx-retail-auth';
+export const USER_KEY = 'bfarmx-retail-user';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.bfarmx.space/api';
 const authApiClient = axios.create({
@@ -43,15 +43,6 @@ function safelyDecodeJwt(token: string) {
     return null;
   }
 }
-const mockUsers = [
-  {
-    email: 'admin@bfarmx.com',
-    password: '123456',
-    name: 'ackerman',
-    avatar: 'https://i.pravatar.cc/150?img=1',
-    roles: ['admin'],
-  },
-];
 
 export const authProviderClient: AuthProvider = {
   login: async ({ email, password }) => {
@@ -104,7 +95,7 @@ export const authProviderClient: AuthProvider = {
         success: false,
         error: {
           message: 'Login failed',
-          name: 'Invalid response from server',
+          name: 'Password or email is incorrect',
         },
       };
     } catch (error) {
@@ -122,58 +113,109 @@ export const authProviderClient: AuthProvider = {
     }
   },
   register: async (params) => {
-    const user = mockUsers.find(item => item.email === params.email);
-
-    if (user) {
-      Cookies.set('auth', JSON.stringify(user), {
-        expires: 30, // 30 days
-        path: '/',
+    try {
+      const response = await authApiClient.post('/retailers', {
+        email: params.email,
+        name: params.name,
       });
-      return {
-        success: true,
-        redirectTo: '/',
-      };
-    }
-    return {
-      success: false,
-      error: {
-        message: 'Register failed',
-        name: 'Invalid email or password',
-      },
-    };
-  },
-  forgotPassword: async (params) => {
-    const user = mockUsers.find(item => item.email === params.email);
 
-    if (user) {
-      return {
-        success: true,
-      };
-    }
-    return {
-      success: false,
-      error: {
-        message: 'Forgot password failed',
-        name: 'Invalid email',
-      },
-    };
-  },
-  updatePassword: async (params) => {
-    const isPasswordInvalid = params.password === '123456' || !params.password;
+      if (response.status === 200) {
+        return {
+          success: true,
+          redirectTo: '/login',
+        };
+      }
 
-    if (isPasswordInvalid) {
       return {
         success: false,
         error: {
-          message: 'Update password failed',
-          name: 'Invalid password',
+          message: 'Đăng ký thất bại',
+          name: 'Lỗi từ máy chủ',
+        },
+      };
+    } catch (error) {
+      const errorMessage
+        = (axios.isAxiosError(error) && error.response?.data?.message)
+          || 'Đăng ký thất bại. Vui lòng thử lại sau.';
+
+      return {
+        success: false,
+        error: {
+          message: 'Đăng ký thất bại',
+          name: errorMessage,
         },
       };
     }
+  },
+  forgotPassword: async (params) => {
+    try {
+      const response = await authApiClient.post('/auth/password-forgotten', null, {
+        params: {
+          email: params.email,
+        },
+      });
 
-    return {
-      success: true,
-    };
+      if (response.status === 200) {
+        return {
+          success: true,
+        };
+      }
+
+      return {
+        success: false,
+        error: {
+          message: 'Gửi yêu cầu thất bại',
+          name: 'Lỗi từ máy chủ',
+        },
+      };
+    } catch (error) {
+      const errorMessage
+        = (axios.isAxiosError(error) && error.response?.data?.message)
+          || 'Gửi yêu cầu thất bại. Vui lòng thử lại sau.';
+
+      return {
+        success: false,
+        error: {
+          message: 'Gửi yêu cầu thất bại',
+          name: errorMessage,
+        },
+      };
+    }
+  },
+  updatePassword: async (params: any) => {
+    try {
+      const response = await authApiClient.put(`/auth/${params.userId}/password`, {
+        old_password: params.oldPassword,
+        new_password: params.newPassword,
+      });
+
+      if (response.status === 200) {
+        return {
+          success: true,
+          redirectTo: '/login',
+        };
+      }
+
+      return {
+        success: false,
+        error: {
+          message: 'Cập nhật mật khẩu thất bại',
+          name: 'Lỗi từ máy chủ',
+        },
+      };
+    } catch (error) {
+      const errorMessage
+        = (axios.isAxiosError(error) && error.response?.data?.message)
+          || 'Cập nhật mật khẩu thất bại. Vui lòng thử lại sau.';
+
+      return {
+        success: false,
+        error: {
+          message: 'Cập nhật mật khẩu thất bại',
+          name: errorMessage,
+        },
+      };
+    }
   },
   logout: async () => {
     Cookies.remove(TOKEN_KEY, { path: '/' });

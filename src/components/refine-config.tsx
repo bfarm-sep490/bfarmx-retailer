@@ -1,9 +1,11 @@
 'use client';
 
+import { Toast } from '@/components/ui/toast';
 import { ablyClient } from '@/lib/ablyClient';
 import { authProviderClient } from '@/providers/auth-provider/auth-provider.client';
 import { dataProvider } from '@/providers/data-provider/client';
 import { liveProvider } from '@/providers/live-provider/live-provider.client';
+import { notificationProvider } from '@/providers/notification-provider';
 import { Refine } from '@refinedev/core';
 import { RefineKbar } from '@refinedev/kbar';
 import routerProvider from '@refinedev/nextjs-router';
@@ -31,9 +33,11 @@ export function RefineConfig({ children }: { children: React.ReactNode }) {
       dataProvider={dataProvider}
       authProvider={authProviderClient}
       liveProvider={liveProvider(ablyClient)}
+      notificationProvider={notificationProvider}
     >
       {children}
       <RefineKbar />
+      <Toast />
     </Refine>
   );
 }

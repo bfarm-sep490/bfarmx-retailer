@@ -166,7 +166,7 @@ export const LoginPage: React.FC<LoginProps> = ({
               </Label>
               {forgotPasswordLink
                 ?? renderLink(
-                  '/forgot-password',
+                  '/auth/forgot-password',
                   translate(
                     'pages.login.buttons.forgotPassword',
                     'Quên mật khẩu?',
@@ -223,7 +223,7 @@ export const LoginPage: React.FC<LoginProps> = ({
           )}
           {' '}
           {renderLink(
-            '/register',
+            '/auth/register',
             translate('pages.login.register', 'Đăng ký'),
           )}
         </div>

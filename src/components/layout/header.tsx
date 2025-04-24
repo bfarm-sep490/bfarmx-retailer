@@ -1,5 +1,4 @@
 import type { IIdentity } from '@/types';
-import type { Dispatch, SetStateAction } from 'react';
 import { useActiveAuthProvider, useGetIdentity, useLogout, useTranslate, useWarnAboutChange } from '@refinedev/core';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
@@ -9,7 +8,6 @@ import {
   LogOut,
   Menu as MenuIcon,
   Package,
-  Phone,
   Settings,
   Sprout,
   User,
@@ -18,6 +16,7 @@ import {
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { NotificationDropdown } from './notification-dropdown';
 
 const iconVariants = {
   initial: { rotate: 180, opacity: 0 },
@@ -107,12 +106,12 @@ const MenuButton = ({
   setOpen,
 }: {
   open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
+  setOpen: (value: boolean) => void;
 }) => {
   return (
     <button
       type="button"
-      onClick={() => setOpen(pv => !pv)}
+      onClick={() => setOpen(!open)}
       className="text-xl font-bold rounded-full h-full bg-emerald-500 text-white p-4 hover:bg-emerald-600 transition-colors"
     >
       <motion.div
@@ -210,16 +209,29 @@ const Menu = () => {
 };
 
 export const Header = () => {
-  const [open, setOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+
+  const handleMenuOpen = (value: boolean) => {
+    setMenuOpen(value);
+    if (value) {
+      setNotificationOpen(false);
+    }
+  };
+
+  const handleNotificationOpen = (value: boolean) => {
+    setNotificationOpen(value);
+    if (value) {
+      setMenuOpen(false);
+    }
+  };
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50">
       <motion.nav
-        animate={open ? 'open' : 'closed'}
-        initial="closed"
         className="bg-white dark:bg-neutral-900 rounded-full text-emerald-900 dark:text-emerald-100 shadow-lg flex items-center justify-between absolute bottom-8 left-[50%] -translate-x-[50%] border border-emerald-100 dark:border-emerald-800"
       >
-        <MenuButton setOpen={setOpen} open={open} />
+        <MenuButton setOpen={handleMenuOpen} open={menuOpen} />
         <div className="flex items-center gap-2 px-4">
           <Link text="Home" Icon={Home} href="/" />
           <Link text="Seed" Icon={Sprout} href="/plants" />
@@ -228,9 +240,22 @@ export const Header = () => {
             Icon={Flower}
             href="/plans"
           />
-          <Link text="Support" Icon={Phone} href="/support" />
+          <NotificationDropdown open={notificationOpen} setOpen={handleNotificationOpen} />
         </div>
-        <Menu />
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              style={{ transformOrigin: 'bottom', x: '-50%' }}
+              className="absolute bottom-[125%] left-[50%]"
+            >
+              <Menu />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.nav>
     </div>
   );

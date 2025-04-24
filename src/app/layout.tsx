@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import { NotificationProvider } from '@/components/notification-provider';
 import { RefineConfig } from '@/components/refine-config';
 import { ThemeProvider } from '@/components/theme-provider';
 import { RefineKbarProvider } from '@refinedev/kbar';
@@ -26,12 +27,16 @@ export default function RootLayout({
           <RefineKbarProvider>
             <ThemeProvider
               attribute="class"
-              defaultTheme="light"
+              defaultTheme="dark"
               enableSystem
               disableTransitionOnChange
               storageKey="bfarmx-theme"
             >
-              <RefineConfig>{children}</RefineConfig>
+              <RefineConfig>
+                <NotificationProvider>
+                  {children}
+                </NotificationProvider>
+              </RefineConfig>
             </ThemeProvider>
           </RefineKbarProvider>
         </Suspense>
