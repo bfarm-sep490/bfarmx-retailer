@@ -151,6 +151,7 @@ export const NotificationDropdown = ({ open, setOpen }: NotificationDropdownProp
   }, [open]);
 
   const { data: notificationsData, isLoading } = useList<Notification>({
+    errorNotification: false,
     resource: `retailers/${user?.id}/notifications`,
     queryOptions: {
       enabled: !!user?.id,
@@ -328,7 +329,7 @@ export const NotificationDropdown = ({ open, setOpen }: NotificationDropdownProp
             </div>
           )}
         </div>
-        <span className="text-xs sm:text-sm font-medium">Noti</span>
+        <span className="text-xs sm:text-sm font-medium">Thông báo</span>
       </button>
 
       <AnimatePresence>

@@ -3,7 +3,6 @@ import { useActiveAuthProvider, useGetIdentity, useLogout, useTranslate, useWarn
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   Flower,
-  Heart,
   Home,
   LogOut,
   Menu as MenuIcon,
@@ -204,7 +203,6 @@ const Menu = () => {
       {/* Menu Items */}
       <div className="flex flex-col gap-1">
         <MenuLink text="Đơn hàng của tôi" Icon={Package} />
-        <MenuLink text="Sản phẩm yêu thích" Icon={Heart} />
         <MenuLink text="Cài đặt tài khoản" Icon={Settings} />
         {mounted && (
           <button
@@ -267,10 +265,10 @@ export const Header = () => {
       >
         <MenuButton setOpen={handleMenuOpen} open={menuOpen} />
         <div className="flex items-center gap-0 sm:gap-4 px-0 sm:px-4">
-          <Link text="Home" Icon={Home} href="/" />
-          <Link text="Seed" Icon={Sprout} href="/plants" />
+          <Link text="Trang chủ" Icon={Home} href="/" />
+          <Link text="Cây giống" Icon={Sprout} href="/plants" />
           <Link
-            text="Plan"
+            text="Kế hoạch"
             Icon={Flower}
             href="/plans"
           />

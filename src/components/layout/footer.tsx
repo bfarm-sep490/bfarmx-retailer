@@ -1,11 +1,12 @@
-import { Hexagon, Phone } from 'lucide-react';
+import { Phone } from 'lucide-react';
+import Image from 'next/image';
 import { CircularFooter } from '../ui/circular-footer';
 
 export const Footer = () => {
   return (
     <div className="w-full">
       <CircularFooter
-        logo={<Hexagon className="h-10 w-10" />}
+        logo={<Image src="/logo.png" alt="BFarmX" width={50} height={50} />}
         brandName="BFarmX"
         socialLinks={[
           {
@@ -15,9 +16,9 @@ export const Footer = () => {
           },
         ]}
         mainLinks={[
-          { href: '/', label: 'Home' },
-          { href: '/plant', label: 'Plant Shop' },
-          { href: '/about', label: 'About' },
+          { href: '/', label: 'Trang chủ' },
+          { href: '/plants', label: 'Cây giống' },
+          { href: '/plan', label: 'Khám phá kế hoạch' },
         ]}
         legalLinks={[
           { href: '/privacy', label: 'Privacy' },

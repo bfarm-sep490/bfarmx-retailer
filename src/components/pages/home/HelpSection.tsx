@@ -37,13 +37,13 @@ const DummyContent = () => {
 
 const data = [
   {
-    category: 'Đặt hàng theo Plan',
+    category: 'Đặt hàng theo kế hoạch',
     title: 'Đặt hàng theo kế hoạch sản xuất.',
     src: 'https://images.unsplash.com/photo-1587334274328-64186a80aeee?q=80&w=2081&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     content: <DummyContent />,
   },
   {
-    category: 'Đặt hàng theo Seed',
+    category: 'Đặt hàng theo hạt giống',
     title: 'Đặt trước hạt giống và theo dõi quá trình trồng.',
     src: 'https://images.unsplash.com/photo-1517868750774-cee9b34b7a48?q=80&w=2012&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     content: <DummyContent />,

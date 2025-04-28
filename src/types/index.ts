@@ -128,7 +128,8 @@ export type Plant = {
   delta_two: number;
   delta_three: number;
   preservation_day: number;
-  estimated_per_one: number;
+  average_estimated_per_one: number;
+  average_duration_date: number;
   status: string;
 };
 

@@ -21,9 +21,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   CheckCircle2,
   Leaf,
-  MessageSquare,
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { QRCodeModal } from './qr-code-modal';
 import 'dayjs/locale/vi';
@@ -75,7 +73,6 @@ export function ProjectStatusCard({
 }: ProjectStatusCardProps) {
   const { isExpanded, toggleExpand, animatedHeight } = useExpandable();
   const contentRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
   const [currentProgress, setCurrentProgress] = useState(0);
 
@@ -120,11 +117,6 @@ export function ProjectStatusCard({
 
   const formatDate = (date: string) => {
     return dayjs(date).locale('vi').format('DD/MM/YYYY');
-  };
-
-  const handleViewDetail = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    router.push(`/plans/${id}`);
   };
 
   const handleViewQR = (e: React.MouseEvent) => {
@@ -277,15 +269,6 @@ export function ProjectStatusCard({
                         </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <Button
-                          className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white transition-all duration-200"
-                          onClick={handleViewDetail}
-                        >
-                          <MessageSquare className="h-4 w-4 mr-2" />
-                          Xem thảo luận
-                        </Button>
-                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>

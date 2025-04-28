@@ -44,6 +44,19 @@ function safelyDecodeJwt(token: string) {
   }
 }
 
+function isTokenExpired(token: string): boolean {
+  const payload = safelyDecodeJwt(token);
+  if (!payload || !payload.exp) {
+    return true;
+  }
+
+  // Convert current time to seconds (Unix timestamp)
+  const currentTime = Math.floor(Date.now() / 1000);
+  const expirationTime = payload.exp;
+
+  return currentTime >= expirationTime;
+}
+
 export const authProviderClient: AuthProvider = {
   login: async ({ email, password }) => {
     try {
@@ -54,11 +67,6 @@ export const authProviderClient: AuthProvider = {
 
       if (response.data.status === 200) {
         const { accessToken } = response.data.data;
-
-        Cookies.set(TOKEN_KEY, accessToken, {
-          expires: 7,
-          path: '/',
-        });
 
         const tokenPayload = safelyDecodeJwt(accessToken);
 
@@ -71,6 +79,23 @@ export const authProviderClient: AuthProvider = {
             },
           };
         }
+
+        // Check if user role is Retailer
+        const userRole = tokenPayload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+        if (userRole !== 'Retailer') {
+          return {
+            success: false,
+            error: {
+              message: 'Access denied',
+              name: 'Only Retailer accounts are allowed to access this application',
+            },
+          };
+        }
+
+        Cookies.set(TOKEN_KEY, accessToken, {
+          expires: 7,
+          path: '/',
+        });
 
         const userInfo = {
           id: tokenPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'],
@@ -228,6 +253,16 @@ export const authProviderClient: AuthProvider = {
   check: async () => {
     const token = Cookies.get(TOKEN_KEY);
     if (token) {
+      if (isTokenExpired(token)) {
+        // Token is expired, remove it and redirect to login
+        Cookies.remove(TOKEN_KEY, { path: '/' });
+        Cookies.remove(USER_KEY, { path: '/' });
+        return {
+          authenticated: false,
+          logout: true,
+          redirectTo: '/auth/login',
+        };
+      }
       return {
         authenticated: true,
       };
