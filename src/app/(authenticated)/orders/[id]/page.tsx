@@ -18,10 +18,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import { axiosInstance } from '@/rest-data-provider/utils';
 import { usePayOS } from '@payos/payos-checkout';
 import { useApiUrl, useOne } from '@refinedev/core';
 import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
+
 import dayjs from 'dayjs';
 import { AlertCircle, ArrowLeft, CreditCard, History, Package, Receipt, Truck, User } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -254,7 +256,7 @@ export default function OrderShowPage() {
 
   const handlePaymentClick = async () => {
     try {
-      const paymentResponse = await axios.post<PaymentResponse>(
+      const paymentResponse = await axiosInstance.post<PaymentResponse>(
         'https://api.bfarmx.space/api/payments/deposit-payment/payos',
         {
           order_id: order?.id,
@@ -284,7 +286,7 @@ export default function OrderShowPage() {
 
   const handleCancelOrder = async () => {
     try {
-      const response = await axios.put(
+      const response = await axiosInstance.put(
         `${apiUrl}/orders/${order?.id}/status?status=Cancel`,
       );
 

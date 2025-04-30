@@ -1,7 +1,22 @@
 import type { HttpError } from '@refinedev/core';
+import { TOKEN_KEY } from '@/providers/auth-provider/auth-provider.client';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const axiosInstance = axios.create();
+
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = Cookies.get(TOKEN_KEY);
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
 
 axiosInstance.interceptors.response.use(
   (response) => {
