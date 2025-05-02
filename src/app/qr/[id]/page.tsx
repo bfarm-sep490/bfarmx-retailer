@@ -101,7 +101,7 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
     inspectionList: null,
   });
   const resolvedParams = use(params);
-  const QR_TOKEN = resolvedParams?.id || '';
+  const PLAN_MANAGEMENT_ADDRESS = resolvedParams?.id || '';
 
   const { data: plantData, isLoading: isPlantLoading } = useOne({
     resource: 'plants',
@@ -129,47 +129,12 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
 
   const loadBlockchainData = async () => {
     try {
-      setLoading(true);
-      setError(null);
-
-      if (!QR_TOKEN) {
-        setError('Mã QR không hợp lệ');
+      // Validate address
+      if (!PLAN_MANAGEMENT_ADDRESS || !/^0x[a-fA-F0-9]{40}$/.test(PLAN_MANAGEMENT_ADDRESS)) {
+        setError('Địa chỉ không hợp lệ');
         setLoading(false);
         return;
       }
-
-      const tokenResponse = await fetch(`/api/qr/shorten?id=${QR_TOKEN}`);
-      if (!tokenResponse.ok) {
-        const errorData = await tokenResponse.json();
-        setError(errorData.error || 'Mã QR không hợp lệ hoặc đã hết hạn');
-        setLoading(false);
-        return;
-      }
-
-      const { token } = await tokenResponse.json();
-      if (!token) {
-        setError('Không thể lấy thông tin từ mã QR');
-        setLoading(false);
-        return;
-      }
-
-      const verifyResponse = await fetch('/api/qr/verify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token }),
-      });
-
-      if (!verifyResponse.ok) {
-        const errorData = await verifyResponse.json();
-        setError(errorData.error || 'Mã QR không hợp lệ hoặc đã hết hạn');
-        setLoading(false);
-        return;
-      }
-
-      const { contract_address } = await verifyResponse.json();
-      const PLAN_MANAGEMENT_ADDRESS = contract_address;
 
       // Only initialize Connex on the client side
       if (typeof window === 'undefined') {
@@ -297,10 +262,10 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
   };
 
   useEffect(() => {
-    if (QR_TOKEN) {
+    if (PLAN_MANAGEMENT_ADDRESS) {
       loadBlockchainData();
     }
-  }, [QR_TOKEN]);
+  }, [PLAN_MANAGEMENT_ADDRESS]);
 
   if (!resolvedParams?.id) {
     return (
