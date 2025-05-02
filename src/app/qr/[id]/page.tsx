@@ -11,13 +11,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { useOne } from '@refinedev/core';
 import { Connex } from '@vechain/connex';
 import { motion } from 'framer-motion';
 import { Calendar, Leaf, Package, User } from 'lucide-react';
 import Image from 'next/image';
 import { use, useEffect, useState } from 'react';
 
-// Add keyframe animation for progress bar
 const style = document.createElement('style');
 style.textContent = `
   @keyframes progress {
@@ -100,18 +100,76 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
     taskList: null,
     inspectionList: null,
   });
-
   const resolvedParams = use(params);
-  const PLAN_MANAGEMENT_ADDRESS = resolvedParams?.id || '';
+  const QR_TOKEN = resolvedParams?.id || '';
+
+  const { data: plantData, isLoading: isPlantLoading } = useOne({
+    resource: 'plants',
+    id: plans.planData?.plantId,
+    queryOptions: {
+      enabled: !!plans.planData?.plantId,
+    },
+  });
+
+  const { data: yieldData, isLoading: isYieldLoading } = useOne({
+    resource: 'yields',
+    id: plans.planData?.yieldId,
+    queryOptions: {
+      enabled: !!plans.planData?.yieldId,
+    },
+  });
+
+  const { data: expertData, isLoading: isExpertLoading } = useOne({
+    resource: 'experts',
+    id: plans.planData?.expertId,
+    queryOptions: {
+      enabled: !!plans.planData?.expertId,
+    },
+  });
 
   const loadBlockchainData = async () => {
     try {
-      // Validate address
-      if (!PLAN_MANAGEMENT_ADDRESS || !/^0x[a-fA-F0-9]{40}$/.test(PLAN_MANAGEMENT_ADDRESS)) {
-        setError('Địa chỉ không hợp lệ');
+      setLoading(true);
+      setError(null);
+
+      if (!QR_TOKEN) {
+        setError('Mã QR không hợp lệ');
         setLoading(false);
         return;
       }
+
+      const tokenResponse = await fetch(`/api/qr/shorten?id=${QR_TOKEN}`);
+      if (!tokenResponse.ok) {
+        const errorData = await tokenResponse.json();
+        setError(errorData.error || 'Mã QR không hợp lệ hoặc đã hết hạn');
+        setLoading(false);
+        return;
+      }
+
+      const { token } = await tokenResponse.json();
+      if (!token) {
+        setError('Không thể lấy thông tin từ mã QR');
+        setLoading(false);
+        return;
+      }
+
+      const verifyResponse = await fetch('/api/qr/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token }),
+      });
+
+      if (!verifyResponse.ok) {
+        const errorData = await verifyResponse.json();
+        setError(errorData.error || 'Mã QR không hợp lệ hoặc đã hết hạn');
+        setLoading(false);
+        return;
+      }
+
+      const { contract_address } = await verifyResponse.json();
+      const PLAN_MANAGEMENT_ADDRESS = contract_address;
 
       // Only initialize Connex on the client side
       if (typeof window === 'undefined') {
@@ -239,10 +297,10 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
   };
 
   useEffect(() => {
-    if (PLAN_MANAGEMENT_ADDRESS) {
+    if (QR_TOKEN) {
       loadBlockchainData();
     }
-  }, [PLAN_MANAGEMENT_ADDRESS]);
+  }, [QR_TOKEN]);
 
   if (!resolvedParams?.id) {
     return (
@@ -436,10 +494,13 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
                       <div className="flex items-center gap-2 self-end md:self-auto">
                         <span className="text-xs md:text-sm text-green-600 dark:text-green-400 whitespace-nowrap">Đã trôi qua</span>
                         <span className="text-base md:text-lg font-bold text-green-800 dark:text-green-300 whitespace-nowrap">
-                          {Math.round(
-                            ((new Date().getTime() - new Date(plans.planData.startDate).getTime())
-                              / (new Date(plans.planData.endDate).getTime() - new Date(plans.planData.startDate).getTime()))
-                            * 100,
+                          {Math.min(
+                            Math.round(
+                              ((new Date().getTime() - new Date(plans.planData.startDate).getTime())
+                                / (new Date(plans.planData.endDate).getTime() - new Date(plans.planData.startDate).getTime()))
+                              * 100,
+                            ),
+                            100,
                           )}
                           %
                         </span>
@@ -447,11 +508,12 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
                     </div>
 
                     <Progress
-                      value={
+                      value={Math.min(
                         ((new Date().getTime() - new Date(plans.planData.startDate).getTime())
                           / (new Date(plans.planData.endDate).getTime() - new Date(plans.planData.startDate).getTime()))
-                        * 100
-                      }
+                        * 100,
+                        100,
+                      )}
                       className="h-2 md:h-3 bg-green-100 dark:bg-green-900/20 [&>div]:bg-gradient-to-r [&>div]:from-green-500 [&>div]:to-emerald-500 dark:[&>div]:from-green-400 dark:[&>div]:to-emerald-400"
                     />
 
@@ -484,13 +546,11 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
                         <p className="text-sm text-emerald-600 dark:text-emerald-400">Tổng sản lượng</p>
                         <p className="text-2xl font-bold text-emerald-800 dark:text-emerald-300">
                           {plans.planData.estimatedProduct}
-                          {' '}
-                          {plans.planData.estimatedUnit}
                         </p>
                       </div>
                       <div className="text-right">
                         <p className="text-sm text-emerald-600 dark:text-emerald-400">Đơn vị tính</p>
-                        <p className="text-lg font-medium text-emerald-800 dark:text-emerald-300">{plans.planData.estimatedUnit}</p>
+                        <p className="text-lg font-medium text-emerald-800 dark:text-emerald-300">kg</p>
                       </div>
                     </div>
                   </div>
@@ -511,9 +571,15 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
                           </div>
                           <span className="text-xs md:text-sm font-medium text-green-600 dark:text-green-400 truncate">Mã cây trồng</span>
                         </div>
-                        <p className="text-lg md:text-2xl font-bold text-green-800 dark:text-green-300 truncate" title={plans.planData.plantId}>
-                          {plans.planData.plantId}
-                        </p>
+                        {isPlantLoading
+                          ? (
+                              <div className="h-8 w-32 bg-green-100 dark:bg-green-900/20 rounded animate-pulse" />
+                            )
+                          : (
+                              <p className="text-lg md:text-2xl font-bold text-green-800 dark:text-green-300 truncate" title={plantData?.data?.plant_name || plans.planData.plantId}>
+                                {plantData?.data?.plant_name || plans.planData.plantId}
+                              </p>
+                            )}
                       </div>
                     </div>
 
@@ -525,11 +591,17 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
                           <div className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm flex-shrink-0">
                             <Package className="h-4 w-4 md:h-5 md:w-5 text-emerald-600 dark:text-emerald-400" />
                           </div>
-                          <span className="text-xs md:text-sm font-medium text-emerald-600 dark:text-emerald-400 truncate">Mã sản phẩm</span>
+                          <span className="text-xs md:text-sm font-medium text-emerald-600 dark:text-emerald-400 truncate">Mã đất trồng</span>
                         </div>
-                        <p className="text-lg md:text-2xl font-bold text-emerald-800 dark:text-emerald-300 truncate" title={plans.planData.yieldId}>
-                          {plans.planData.yieldId}
-                        </p>
+                        {isYieldLoading
+                          ? (
+                              <div className="h-8 w-32 bg-emerald-100 dark:bg-emerald-900/20 rounded animate-pulse" />
+                            )
+                          : (
+                              <p className="text-lg md:text-2xl font-bold text-emerald-800 dark:text-emerald-300 truncate" title={yieldData?.data?.yield_name || plans.planData.yieldId}>
+                                {yieldData?.data?.yield_name || plans.planData.yieldId}
+                              </p>
+                            )}
                       </div>
                     </div>
 
@@ -543,9 +615,15 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
                           </div>
                           <span className="text-xs md:text-sm font-medium text-teal-600 dark:text-teal-400 truncate">Chuyên gia</span>
                         </div>
-                        <p className="text-lg md:text-2xl font-bold text-teal-800 dark:text-teal-300 truncate" title={plans.planData.expertId}>
-                          {plans.planData.expertId}
-                        </p>
+                        {isExpertLoading
+                          ? (
+                              <div className="h-8 w-32 bg-teal-100 dark:bg-teal-900/20 rounded animate-pulse" />
+                            )
+                          : (
+                              <p className="text-lg md:text-2xl font-bold text-teal-800 dark:text-teal-300 truncate" title={expertData?.data?.name || plans.planData.expertId}>
+                                {expertData?.data?.name || plans.planData.expertId}
+                              </p>
+                            )}
                       </div>
                     </div>
 
@@ -591,7 +669,7 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
 
                         <Accordion type="single" collapsible className="space-y-4">
                           {plans.taskList.map((task, _index) => (
-                            <div key={task.taskId} className="relative pl-12">
+                            <div key={`${task.taskId}-${task.timestamp}`} className="relative pl-12">
                               {/* Timeline dot with icon */}
                               <div className="absolute left-1 top-7 w-6 h-6 rounded-full bg-green-50 dark:bg-green-900/20 border-2 border-white dark:border-gray-800 flex items-center justify-center shadow-lg shadow-green-200 dark:shadow-green-900/30">
                                 <div className="relative">
@@ -604,7 +682,7 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
                                 <div className="absolute -bottom-2 left-4 right-4 h-4 bg-white/50 dark:bg-gray-800/50 rounded-b-xl"></div>
                                 <div className="absolute -bottom-4 left-8 right-8 h-4 bg-white/30 dark:bg-gray-800/30 rounded-b-xl"></div>
 
-                                <AccordionItem value={task.taskId} className="border-0">
+                                <AccordionItem value={`${task.taskId}-${task.timestamp}`} className="border-0">
                                   <Card className="relative border-0 shadow-sm py-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm
                                   gap-0 hover:shadow-md transition-shadow duration-300"
                                   >
