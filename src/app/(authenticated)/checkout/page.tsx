@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useConfiguration } from '@/hooks/useConfiguration';
 import { usePackagingTypes } from '@/hooks/usePackagingTypes';
 import { cn } from '@/lib/utils';
 import { useCartStore } from '@/store/cart';
@@ -44,9 +45,9 @@ export default function CheckoutPage() {
   const { mutate: createOrder, isLoading } = useCreate<BaseRecord, HttpError>();
   const { items, updateQuantity, getTotalItems, getTotalPrice, clearCart } = useCartStore();
   const { packagingTypes, isLoading: isLoadingPackagingTypes } = usePackagingTypes();
+  const { depositPercent } = useConfiguration();
   const [month, setMonth] = useState(new Date());
 
-  // Calculate the earliest possible pick-up date
   const getEarliestPickUpDate = () => {
     const minDate = new Date();
     if (items[0]?.plant?.average_duration_date) {
@@ -84,7 +85,7 @@ export default function CheckoutPage() {
         retailer_id: user?.id,
         plant_id: items[0]?.plant.id,
         packaging_type_id: values.packaging_type_id,
-        deposit_price: getTotalPrice() * 0.3,
+        deposit_price: getTotalPrice() * (depositPercent / 100),
         address: 'HCM',
         phone: values.phone,
         preorder_quantity: getTotalItems(),
@@ -228,9 +229,14 @@ export default function CheckoutPage() {
                   </span>
                 </div>
                 <div className="flex justify-between text-sm text-primary">
-                  <span>Đặt cọc 30%</span>
+                  <span>
+                    Đặt cọc
+                    {' '}
+                    {depositPercent}
+                    %
+                  </span>
                   <span className="font-medium">
-                    {(getTotalPrice() * 0.3).toLocaleString('vi-VN')}
+                    {(getTotalPrice() * (depositPercent / 100)).toLocaleString('vi-VN')}
                     đ
                   </span>
                 </div>
@@ -238,7 +244,7 @@ export default function CheckoutPage() {
                 <div className="flex justify-between text-lg font-medium text-primary">
                   <span></span>
                   <span>
-                    {(getTotalPrice() * 0.3).toLocaleString('vi-VN')}
+                    {(getTotalPrice() * (depositPercent / 100)).toLocaleString('vi-VN')}
                     đ
                   </span>
                 </div>
@@ -534,7 +540,7 @@ export default function CheckoutPage() {
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-primary mt-0.5" />
                         <span>
-                          {`Tiền đặt cọc (30%): ${(getTotalPrice() * 0.3).toLocaleString('vi-VN')} đ`}
+                          {`Tiền đặt cọc (${depositPercent}%): ${(getTotalPrice() * (depositPercent / 100)).toLocaleString('vi-VN')} đ`}
                         </span>
                       </li>
                     </ul>

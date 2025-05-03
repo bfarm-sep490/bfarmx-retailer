@@ -25,7 +25,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
 import dayjs from 'dayjs';
-import { AlertCircle, ArrowLeft, CreditCard, History, Package, Receipt, Truck, User } from 'lucide-react';
+import { AlertCircle, ArrowLeft, CheckCircle2, CreditCard, History, Package, Receipt, Truck, User } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -141,12 +141,26 @@ const ErrorState = ({ error, onRetry }: { error: string; onRetry: () => void }) 
 const MessageState = ({ message }: { message: string }) => (
   <div className="container max-w-7xl mx-auto px-4 py-8">
     <div className="rounded-xl bg-white dark:bg-neutral-900 shadow-lg dark:shadow-neutral-800/50 p-6">
-      <div className="text-center">
-        <p className="text-lg font-medium text-green-600 dark:text-green-400">{message}</p>
+      <div className="flex flex-col items-center justify-center space-y-4">
+        <div className="relative">
+          <div className="absolute inset-0 bg-green-500/20 rounded-full animate-ping" />
+          <div className="relative w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center">
+            <CheckCircle2 className="w-8 h-8 text-green-500 animate-bounce" />
+          </div>
+        </div>
+        <div className="text-center space-y-2">
+          <h3 className="text-xl font-semibold text-green-600 dark:text-green-400">
+            Thành công!
+          </h3>
+          <p className="text-lg text-neutral-600 dark:text-neutral-300">
+            {message}
+          </p>
+        </div>
         <Button
           onClick={() => window.location.reload()}
-          className="mt-4 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-900 dark:text-neutral-100"
+          className="mt-4 bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white transition-all duration-300 transform hover:scale-105"
         >
+          <ArrowLeft className="w-4 h-4 mr-2" />
           Quay lại trang chi tiết
         </Button>
       </div>

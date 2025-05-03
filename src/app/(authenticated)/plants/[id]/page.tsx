@@ -5,6 +5,7 @@ import Loading from '@/app/loading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useConfiguration } from '@/hooks/useConfiguration';
 import { useCartStore } from '@/store/cart';
 import { useOne } from '@refinedev/core';
 import { CheckCircle2, ChevronLeft, Clock, DollarSign, Minus, Plus } from 'lucide-react';
@@ -20,6 +21,7 @@ export default function PlantDetailPage() {
     resource: 'plants',
     id: params.id as string,
   });
+  const { depositPercent } = useConfiguration();
   const { addItem } = useCartStore();
   const [quantity, setQuantity] = useState(50);
   const MAX_QUANTITY = 100000;
@@ -34,7 +36,7 @@ export default function PlantDetailPage() {
   };
 
   const calculateDeposit = (total: number) => {
-    return total * 0.3;
+    return total * (depositPercent / 100);
   };
 
   if (isLoading) {
@@ -160,7 +162,11 @@ export default function PlantDetailPage() {
                 </div>
 
                 <div className="flex items-center justify-between rounded-lg bg-muted p-3 lg:p-4">
-                  <div className="text-sm font-medium text-foreground">Tiền đặt cọc (30%)</div>
+                  <div className="text-sm font-medium text-foreground">
+                    Tiền đặt cọc (
+                    {depositPercent}
+                    %)
+                  </div>
                   <div className="text-lg lg:text-xl font-bold text-primary">
                     {calculateDeposit(calculateTotal(quantity)).toLocaleString('vi-VN')}
                     đ

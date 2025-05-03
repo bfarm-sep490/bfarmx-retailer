@@ -2,6 +2,7 @@ import type { Plant } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { useConfiguration } from '@/hooks/useConfiguration';
 import { useCartStore } from '@/store/cart';
 import { Minus, Plus, ShoppingCart } from 'lucide-react';
 import { useState } from 'react';
@@ -14,6 +15,7 @@ type Props = {
 
 export const AddToCartPopup = ({ plant, open, onOpenChange }: Props) => {
   const { addItem } = useCartStore();
+  const { depositPercent } = useConfiguration();
   const [quantity, setQuantity] = useState(50);
 
   const handleAddToCart = () => {
@@ -34,7 +36,7 @@ export const AddToCartPopup = ({ plant, open, onOpenChange }: Props) => {
   };
 
   const totalPrice = quantity * plant.base_price;
-  const deposit = totalPrice * 0.3;
+  const deposit = totalPrice * (depositPercent / 100);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -115,7 +117,13 @@ export const AddToCartPopup = ({ plant, open, onOpenChange }: Props) => {
               </span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Đặt cọc 30%</span>
+              <span className="text-muted-foreground">
+                Đặt cọc
+                {' '}
+                {' '}
+                {depositPercent}
+                %
+              </span>
               <span className="font-semibold text-primary">
                 {formatPrice(deposit)}
               </span>

@@ -1,13 +1,18 @@
+import { useConfiguration } from '@/hooks/useConfiguration';
 import { Phone } from 'lucide-react';
 import Image from 'next/image';
 import { CircularFooter } from '../ui/circular-footer';
 
 export const Footer = () => {
+  const { address, phone } = useConfiguration();
+
   return (
     <div className="w-full">
       <CircularFooter
         logo={<Image src="/logo.png" alt="BFarmX" width={50} height={50} />}
         brandName="BFarmX"
+        address={address}
+        phone={phone}
         socialLinks={[
           {
             icon: <Phone className="h-5 w-5" />,
