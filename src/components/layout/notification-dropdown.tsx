@@ -74,8 +74,7 @@ const NotificationItem = ({ item, onMarkAsRead }: NotificationItemProps) => {
   return (
     <button
       type="button"
-      className={`w-full text-left flex items-start gap-3 p-4 rounded-lg transition-colors hover:bg-emerald-50/50 dark:hover:bg-emerald-950/30 ${
-        !item.is_read ? 'bg-emerald-50 dark:bg-emerald-950/50 cursor-pointer' : 'cursor-default'
+      className={`w-full text-left flex items-start gap-3 p-4 rounded-lg transition-colors hover:bg-emerald-50/50 dark:hover:bg-emerald-950/30 ${!item.is_read ? 'bg-emerald-50 dark:bg-emerald-950/50 cursor-pointer' : 'cursor-default'
       }`}
       onClick={() => !item.is_read && onMarkAsRead(item.id)}
       onKeyDown={(e) => {
@@ -94,8 +93,7 @@ const NotificationItem = ({ item, onMarkAsRead }: NotificationItemProps) => {
         <div className="relative">
           <p
             ref={messageRef}
-            className={`text-xs text-emerald-600 dark:text-emerald-400 transition-all duration-200 ${
-              isExpanded ? '' : 'line-clamp-2'
+            className={`text-xs text-emerald-600 dark:text-emerald-400 transition-all duration-200 ${isExpanded ? '' : 'line-clamp-2'
             }`}
           >
             {item.message}
@@ -155,7 +153,7 @@ export const NotificationDropdown = ({ open, setOpen }: NotificationDropdownProp
     resource: `retailers/${user?.id}/notifications`,
     queryOptions: {
       enabled: !!user?.id,
-      refetchInterval: 30000,
+      refetchInterval: 60000,
     },
   });
 
@@ -238,10 +236,9 @@ export const NotificationDropdown = ({ open, setOpen }: NotificationDropdownProp
             setActiveTab('all');
             setShowAll(false);
           }}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            activeTab === 'all'
-              ? 'bg-emerald-100 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-100'
-              : 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/50'
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'all'
+            ? 'bg-emerald-100 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-100'
+            : 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/50'
           }`}
         >
           Tất cả
@@ -252,10 +249,9 @@ export const NotificationDropdown = ({ open, setOpen }: NotificationDropdownProp
             setActiveTab('unread');
             setShowAll(false);
           }}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            activeTab === 'unread'
-              ? 'bg-emerald-100 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-100'
-              : 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/50'
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'unread'
+            ? 'bg-emerald-100 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-100'
+            : 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/50'
           }`}
         >
           Chưa đọc

@@ -1,5 +1,5 @@
 import { ablyClient } from '@/lib/ablyClient';
-import { useGetIdentity } from '@refinedev/core';
+import { useGetIdentity, useInvalidate } from '@refinedev/core';
 import { Bell } from 'lucide-react';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
@@ -23,6 +23,7 @@ type IIdentity = {
 
 export const useNotificationSystem = () => {
   const { data: user } = useGetIdentity<IIdentity>();
+  const invalidate = useInvalidate();
 
   useEffect(() => {
     if (!user?.id) {
@@ -58,6 +59,11 @@ export const useNotificationSystem = () => {
           theme: 'light',
         },
       );
+
+      invalidate({
+        resource: `retailers/${user.id}/notifications`,
+        invalidates: ['list'],
+      });
     };
 
     channel.subscribe('Notification', handleNotification);
@@ -65,5 +71,5 @@ export const useNotificationSystem = () => {
     return () => {
       channel.unsubscribe('Notification', handleNotification);
     };
-  }, [user?.id]);
+  }, [user?.id, invalidate]);
 };
