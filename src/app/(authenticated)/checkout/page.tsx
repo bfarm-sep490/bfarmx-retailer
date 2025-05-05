@@ -85,8 +85,7 @@ export default function CheckoutPage() {
         retailer_id: user?.id,
         plant_id: items[0]?.plant.id,
         packaging_type_id: values.packaging_type_id,
-        deposit_price: getTotalPrice() * (depositPercent / 100),
-        address: 'HCM',
+        deposit_price: Math.round(getTotalPrice() * (depositPercent / 100)),
         phone: values.phone,
         preorder_quantity: getTotalItems(),
         estimate_pick_up_date: values.estimate_pick_up_date.toISOString(),
@@ -236,7 +235,7 @@ export default function CheckoutPage() {
                     %
                   </span>
                   <span className="font-medium">
-                    {(getTotalPrice() * (depositPercent / 100)).toLocaleString('vi-VN')}
+                    {Math.round(getTotalPrice() * (depositPercent / 100)).toLocaleString('vi-VN')}
                     đ
                   </span>
                 </div>
@@ -244,7 +243,7 @@ export default function CheckoutPage() {
                 <div className="flex justify-between text-lg font-medium text-primary">
                   <span></span>
                   <span>
-                    {(getTotalPrice() * (depositPercent / 100)).toLocaleString('vi-VN')}
+                    {Math.round(getTotalPrice() * (depositPercent / 100)).toLocaleString('vi-VN')}
                     đ
                   </span>
                 </div>
@@ -540,7 +539,7 @@ export default function CheckoutPage() {
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-primary mt-0.5" />
                         <span>
-                          {`Tiền đặt cọc (${depositPercent}%): ${(getTotalPrice() * (depositPercent / 100)).toLocaleString('vi-VN')} đ`}
+                          {`Tiền đặt cọc (${depositPercent}%): ${Math.round(getTotalPrice() * (depositPercent / 100)).toLocaleString('vi-VN')} đ`}
                         </span>
                       </li>
                     </ul>

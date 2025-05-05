@@ -470,10 +470,6 @@ export default function OrderShowPage() {
             <span className="text-neutral-600 dark:text-neutral-300">Số điện thoại:</span>
             <span className="font-medium font-mono">{order.phone}</span>
           </div>
-          <div className="flex justify-between gap-4 items-center">
-            <span className="text-neutral-600 dark:text-neutral-300 whitespace-nowrap">Địa chỉ:</span>
-            <span className="font-medium">{order.address}</span>
-          </div>
         </div>
       ),
     },
