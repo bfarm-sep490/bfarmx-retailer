@@ -37,6 +37,7 @@ export function QRCodeModal({ isOpen, onClose, planData }: QRCodeModalProps) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-api-key': process.env.NEXT_PUBLIC_QR_API_KEY || '',
         },
         body: JSON.stringify({
           contract_address: planData.contract_address,

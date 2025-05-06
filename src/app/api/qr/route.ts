@@ -8,8 +8,21 @@ type EncryptedData = {
   x?: number; // access_expires_at
 };
 
+function validateApiKey(request: NextRequest): boolean {
+  const apiKey = request.headers.get('x-api-key');
+  return apiKey === process.env.QR_API_KEY;
+}
+
 export async function POST(request: NextRequest) {
   try {
+    // Check API key
+    if (!validateApiKey(request)) {
+      return NextResponse.json(
+        { error: 'Invalid API key' },
+        { status: 401 },
+      );
+    }
+
     const body = await request.json();
     const { contract_address, qrExpiryHours, accessExpiryHours } = body;
 
@@ -57,6 +70,14 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    // Check API key
+    if (!validateApiKey(request)) {
+      return NextResponse.json(
+        { error: 'Invalid API key' },
+        { status: 401 },
+      );
+    }
+
     const searchParams = request.nextUrl.searchParams;
     const base64url = searchParams.get('data');
 

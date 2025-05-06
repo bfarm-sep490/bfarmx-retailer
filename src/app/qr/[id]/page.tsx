@@ -131,7 +131,11 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
   const loadBlockchainData = async () => {
     try {
       // Decrypt the data using the API
-      const response = await fetch(`/api/qr?data=${encryptedId}`);
+      const response = await fetch(`/api/qr?data=${encryptedId}`, {
+        headers: {
+          'x-api-key': process.env.NEXT_PUBLIC_QR_API_KEY || '',
+        },
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
