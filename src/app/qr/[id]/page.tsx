@@ -102,7 +102,7 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
     inspectionList: null,
   });
   const resolvedParams = use(params);
-  const PLAN_MANAGEMENT_ADDRESS = resolvedParams?.id || '';
+  const encryptedId = resolvedParams?.id || '';
 
   const { data: plantData, isLoading: isPlantLoading } = useOne({
     resource: 'plants',
@@ -130,8 +130,20 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
 
   const loadBlockchainData = async () => {
     try {
+      // Decrypt the data using the API
+      const response = await fetch(`/api/qr?data=${encryptedId}`);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData.error || 'Failed to decrypt data');
+        setLoading(false);
+        return;
+      }
+
+      const { contract_address } = await response.json();
+
       // Validate address
-      if (!PLAN_MANAGEMENT_ADDRESS || !/^0x[a-fA-F0-9]{40}$/.test(PLAN_MANAGEMENT_ADDRESS)) {
+      if (!contract_address || !/^0x[a-fA-F0-9]{40}$/.test(contract_address)) {
         setError('Địa chỉ không hợp lệ');
         setLoading(false);
         return;
@@ -149,7 +161,7 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
         network: 'test',
       });
 
-      const method = connex.thor.account(PLAN_MANAGEMENT_ADDRESS).method({
+      const method = connex.thor.account(contract_address).method({
         inputs: [],
         name: 'getPlanInfo',
         outputs: [
@@ -263,10 +275,10 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
   };
 
   useEffect(() => {
-    if (PLAN_MANAGEMENT_ADDRESS) {
+    if (encryptedId) {
       loadBlockchainData();
     }
-  }, [PLAN_MANAGEMENT_ADDRESS]);
+  }, [encryptedId]);
 
   if (!resolvedParams?.id) {
     return (
