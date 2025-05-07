@@ -18,7 +18,7 @@ export default function PlansPage() {
     ],
     pagination: {
       mode: 'client',
-      pageSize: 6,
+      pageSize: 3,
     },
   });
 
@@ -31,7 +31,7 @@ export default function PlansPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-foreground">Kế hoạch canh tác</h1>
         <p className="mt-2 text-muted-foreground">
-          Theo dõi và quản lý kế hoạch canh tác của bạn. Giám sát tiến độ, năng suất và phối hợp với chuyên gia.
+          Theo dõi và quản lý kế hoạch đang diễn ra trong hệ thống.
         </p>
       </div>
       <Suspense fallback={<Loading />}>

@@ -5,7 +5,7 @@ import { Filters } from './filters';
 
 export const OrderFiltersWrapper = () => {
   const [searchValue, setSearchValue] = useState('');
-  const [statusValue, setStatusValue] = useState('PendingConfirmation');
+  const [statusValue, setStatusValue] = useState('all');
 
   return (
     <div className="space-y-4">

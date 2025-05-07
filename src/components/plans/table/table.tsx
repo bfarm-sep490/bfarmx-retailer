@@ -68,10 +68,10 @@ export const PlansTable = ({ refineCoreProps }: Props) => {
                   },
                 }}
                 tasks={[
-                  { title: `Plant: ${plan.plant_name}`, completed: true },
-                  { title: `Yield: ${plan.yield_name}`, completed: true },
-                  { title: `Estimated Product: ${plan.estimated_product} kg`, completed: plan.status === 'Completed' },
-                  { title: `Seed Quantity: ${plan.seed_quantity}`, completed: true },
+                  { title: `Giống cây: ${plan.plant_name}`, completed: true },
+                  { title: `Đất trồng: ${plan.yield_name}`, completed: true },
+                  { title: `Sản lượng dự kiến: ${plan.estimated_product} kg`, completed: plan.status === 'Completed' },
+                  { title: `Số lượng giống: ${plan.seed_quantity}`, completed: true },
                 ]}
                 qr_code={plan.qr_code}
                 contract_address={plan?.contract_address}
@@ -100,7 +100,7 @@ export const PlansTable = ({ refineCoreProps }: Props) => {
     refineCoreProps: {
       syncWithLocation: true,
       resource: 'plans',
-      initialPageSize: 4,
+      initialPageSize: 3,
       pagination: {
         mode: 'client',
       },
@@ -126,7 +126,7 @@ export const PlansTable = ({ refineCoreProps }: Props) => {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
         {rows.map((row) => {
           return (
             <div key={row.id} className="w-full">

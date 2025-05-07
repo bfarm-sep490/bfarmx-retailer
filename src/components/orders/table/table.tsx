@@ -146,9 +146,6 @@ export const OrdersTable = ({ refineCoreProps }: Props) => {
         ],
       },
       initialPageSize: 6,
-      pagination: {
-        mode: 'client',
-      },
       ...(refineCoreProps || {}),
     },
   });

@@ -189,7 +189,7 @@ function HeroGeometric({
           >
 
             <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed font-light tracking-wide max-w-xl mx-auto px-4">
-              Kết nối nhà bán lẻ với nông trại thông minh. Đặt hàng theo kế hoạch hoặc đặt trước hạt giống.
+              Kết nối nhà bán lẻ với nông trại thông minh. Đặt hàng theo giống cây.
               Theo dõi toàn bộ quá trình sản xuất với công nghệ Blockchain và IoT.
             </p>
           </motion.div>
