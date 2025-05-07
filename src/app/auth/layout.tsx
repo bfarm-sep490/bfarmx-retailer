@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Authentication - BFarmX',
@@ -70,20 +69,6 @@ export default function AuthLayout({ children }: PropsWithChildren) {
             {' '}
             BFarmX. All rights reserved.
           </div>
-          <div className="flex gap-4">
-            <Link
-              href="/privacy-policy"
-              className="text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline transition-colors"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              href="/terms"
-              className="text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline transition-colors"
-            >
-              Terms of Service
-            </Link>
-          </div>
         </div>
       </div>
 
@@ -116,20 +101,6 @@ export default function AuthLayout({ children }: PropsWithChildren) {
             {new Date().getFullYear()}
             {' '}
             BFarmX. All rights reserved.
-          </div>
-          <div className="flex gap-4">
-            <Link
-              href="/privacy-policy"
-              className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline transition-colors"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              href="/terms"
-              className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline transition-colors"
-            >
-              Terms of Service
-            </Link>
           </div>
         </div>
       </div>

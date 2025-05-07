@@ -8,7 +8,6 @@ import {
   Menu as MenuIcon,
   Moon,
   Package,
-  Settings,
   Sprout,
   Sun,
   User,
@@ -203,7 +202,6 @@ const Menu = () => {
       {/* Menu Items */}
       <div className="flex flex-col gap-1">
         <MenuLink text="Đơn hàng của tôi" Icon={Package} />
-        <MenuLink text="Cài đặt tài khoản" Icon={Settings} />
         {mounted && (
           <button
             type="button"
@@ -266,7 +264,7 @@ export const Header = () => {
         <MenuButton setOpen={handleMenuOpen} open={menuOpen} />
         <div className="flex items-center gap-0 sm:gap-4 px-0 sm:px-4">
           <Link text="Trang chủ" Icon={Home} href="/" />
-          <Link text="Cây giống" Icon={Sprout} href="/plants" />
+          <Link text="Giống cây" Icon={Sprout} href="/plants" />
           <Link
             text="Kế hoạch"
             Icon={Flower}

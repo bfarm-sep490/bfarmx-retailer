@@ -26,8 +26,8 @@ export const Footer = () => {
           { href: '/plan', label: 'Khám phá kế hoạch' },
         ]}
         legalLinks={[
-          { href: '/privacy', label: 'Privacy' },
-          { href: '/terms', label: 'Terms' },
+          { href: '/privacy', label: 'Chính sách bảo mật' },
+          { href: '/guide', label: 'Tài liệu kiểm định' },
         ]}
         copyright={{
           text: '© 2025 BFarmX',
