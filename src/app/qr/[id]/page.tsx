@@ -1,12 +1,5 @@
 'use client';
 
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
-import { useOne } from '@refinedev/core';
-import { Connex } from '@vechain/connex';
-import { motion } from 'framer-motion';
-import { Calendar, Leaf, Package, User } from 'lucide-react';
-import Image from 'next/image';
-import { use, useEffect, useState } from 'react';
 import Particles from '@/components/particles';
 import {
   Accordion,
@@ -18,6 +11,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { useOne } from '@refinedev/core';
+import { Connex } from '@vechain/connex';
+import { motion } from 'framer-motion';
+import { Calendar, Leaf, Package, User } from 'lucide-react';
+import Image from 'next/image';
+import { use, useEffect, useState } from 'react';
 
 const style = document.createElement('style');
 style.textContent = `

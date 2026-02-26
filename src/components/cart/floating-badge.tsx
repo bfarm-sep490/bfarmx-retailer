@@ -1,8 +1,8 @@
+import { Button } from '@/components/ui/button';
+import { useCartStore } from '@/store/cart';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ShoppingCart, X } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { useCartStore } from '@/store/cart';
 
 export const FloatingBadge = () => {
   const router = useRouter();

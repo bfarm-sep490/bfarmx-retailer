@@ -1,12 +1,12 @@
 'use client';
 
 import type { LayoutProps } from '@refinedev/core';
-import { useIsAuthenticated } from '@refinedev/core';
-import React, { useEffect } from 'react';
 import { FloatingBadge } from '@/components/cart/floating-badge';
 import { Footer } from '@/components/layout/footer';
 import { Header } from '@/components/layout/header';
 import Particles from '@/components/particles';
+import { useIsAuthenticated } from '@refinedev/core';
+import React, { useEffect } from 'react';
 
 export default function Layout({ children }: LayoutProps) {
   const { refetch } = useIsAuthenticated();

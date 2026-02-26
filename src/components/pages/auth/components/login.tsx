@@ -10,6 +10,14 @@ import type {
   FormHTMLAttributes,
   HTMLAttributes,
 } from 'react';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  TOKEN_KEY,
+  USER_KEY,
+} from '@/providers/auth-provider/auth-provider.client';
 import {
   useActiveAuthProvider,
   useLink,
@@ -21,14 +29,6 @@ import {
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  TOKEN_KEY,
-  USER_KEY,
-} from '@/providers/auth-provider/auth-provider.client';
 
 type DivPropsType = DetailedHTMLProps<
   HTMLAttributes<HTMLDivElement>,

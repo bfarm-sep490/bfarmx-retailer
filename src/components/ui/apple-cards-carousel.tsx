@@ -1,5 +1,7 @@
 'use client';
 import type { ImageProps } from 'next/image';
+import { useOutsideClick } from '@/hooks/use-outside-click';
+import { cn } from '@/lib/utils';
 import {
   IconArrowNarrowLeft,
   IconArrowNarrowRight,
@@ -14,8 +16,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useOutsideClick } from '@/hooks/use-outside-click';
-import { cn } from '@/lib/utils';
 
 type CarouselProps = {
   items: JSX.Element[];
@@ -33,9 +33,9 @@ export const CarouselContext = createContext<{
   onCardClose: (index: number) => void;
   currentIndex: number;
 }>({
-  onCardClose: () => {},
-  currentIndex: 0,
-});
+      onCardClose: () => {},
+      currentIndex: 0,
+    });
 
 export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
   const carouselRef = React.useRef<HTMLDivElement>(null);

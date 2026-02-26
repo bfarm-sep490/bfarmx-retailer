@@ -1,11 +1,11 @@
 import type { Plant } from '@/types';
-import { Minus, Plus, ShoppingCart } from 'lucide-react';
-import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useConfiguration } from '@/hooks/useConfiguration';
 import { useCartStore } from '@/store/cart';
+import { Minus, Plus, ShoppingCart } from 'lucide-react';
+import { useState } from 'react';
 
 type Props = {
   plant: Plant;

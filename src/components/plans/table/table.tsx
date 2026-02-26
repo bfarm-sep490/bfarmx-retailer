@@ -1,8 +1,9 @@
 'use client';
 
+import type { IPlan } from '@/types';
 import type { HttpError, useTableProps } from '@refinedev/core';
 import type { ColumnDef } from '@tanstack/react-table';
-import type { IPlan } from '@/types';
+import { Button } from '@/components/ui/button';
 import { useTable } from '@refinedev/react-table';
 import { flexRender } from '@tanstack/react-table';
 import {
@@ -18,7 +19,6 @@ import {
   User,
 } from 'lucide-react';
 import { useMemo } from 'react';
-import { Button } from '@/components/ui/button';
 import { ProjectStatusCard } from '../expandable-card';
 
 type Props = {

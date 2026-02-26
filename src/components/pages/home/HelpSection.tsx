@@ -1,7 +1,7 @@
 'use client';
+import { Card, Carousel } from '@/components/ui/apple-cards-carousel';
 import Image from 'next/image';
 import React from 'react';
-import { Card, Carousel } from '@/components/ui/apple-cards-carousel';
 
 const FeatureContent = ({ feature }: { feature: string }) => {
   const contentMap: Record<string, { title: string; sections: { title: string; description: string; image: string }[] }> = {

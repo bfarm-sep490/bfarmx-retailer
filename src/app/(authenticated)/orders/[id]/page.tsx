@@ -1,14 +1,6 @@
 'use client';
 
 import type { Order } from '@/types';
-import { usePayOS } from '@payos/payos-checkout';
-import { useApiUrl, useOne } from '@refinedev/core';
-import { useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
-import dayjs from 'dayjs';
-import { AlertCircle, ArrowLeft, CheckCircle2, CreditCard, History, Package, Receipt, Truck, User } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import Loading from '@/app/loading';
 import {
   AlertDialog,
@@ -23,11 +15,19 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { axiosInstance } from '@/rest-data-provider/utils';
+import { usePayOS } from '@payos/payos-checkout';
+import { useApiUrl, useOne } from '@refinedev/core';
+import { useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+
+import dayjs from 'dayjs';
+import { AlertCircle, ArrowLeft, CheckCircle2, CreditCard, History, Package, Receipt, Truck, User } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 // Types
 type PaymentResponse = {

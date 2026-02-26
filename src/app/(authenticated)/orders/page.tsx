@@ -1,12 +1,12 @@
 'use client';
 
 import type { IIdentity, Order } from '@/types';
-import { Separator } from '@radix-ui/react-separator';
-import { useGetIdentity, useList } from '@refinedev/core';
-import { Suspense } from 'react';
 import Loading from '@/app/loading';
 import { OrderFiltersWrapper } from '@/components/orders/filters/filters-wrapper';
 import { OrdersTable } from '@/components/orders/table';
+import { Separator } from '@radix-ui/react-separator';
+import { useGetIdentity, useList } from '@refinedev/core';
+import { Suspense } from 'react';
 
 export default function OrdersPage() {
   const { data: user } = useGetIdentity<IIdentity>();

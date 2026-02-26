@@ -1,7 +1,7 @@
 import type { NotificationProvider } from '@refinedev/core';
+import { UndoableNotification } from '@/components/undoable-notification';
 import React from 'react';
 import { toast } from 'react-toastify';
-import { UndoableNotification } from '@/components/undoable-notification';
 
 export const notificationProvider: NotificationProvider = {
   open: ({ key, message, type, undoableTimeout, cancelMutation }) => {

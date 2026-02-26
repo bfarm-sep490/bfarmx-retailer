@@ -1,11 +1,11 @@
 'use client';
 
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import * as React from 'react';
-import { DayPicker } from 'react-day-picker';
-
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+import * as React from 'react';
+import { DayPicker } from 'react-day-picker';
 
 const IconLeft = ({ className, ...props }: React.ComponentProps<typeof ChevronLeft>) => (
   <ChevronLeft className={cn('size-4', className)} {...props} />

@@ -1,10 +1,10 @@
 'use client';
 
 import type { IPlan } from '@/types';
-import { useList } from '@refinedev/core';
-import { Suspense } from 'react';
 import Loading from '@/app/loading';
 import { PlansTable } from '@/components/plans/table/table';
+import { useList } from '@refinedev/core';
+import { Suspense } from 'react';
 
 export default function PlansPage() {
   const { data: planData, isLoading } = useList<IPlan>({

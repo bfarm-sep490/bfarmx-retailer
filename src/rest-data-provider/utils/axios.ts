@@ -1,7 +1,7 @@
 import type { HttpError } from '@refinedev/core';
+import { TOKEN_KEY } from '@/providers/auth-provider/auth-provider.client';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { TOKEN_KEY } from '@/providers/auth-provider/auth-provider.client';
 
 const axiosInstance = axios.create();
 
