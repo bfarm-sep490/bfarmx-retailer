@@ -4,10 +4,12 @@ import type {
   LoginFormTypes,
   LoginPageProps,
 } from '@refinedev/core';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import type {
+  DetailedHTMLProps,
+  FC,
+  FormHTMLAttributes,
+  HTMLAttributes,
+} from 'react';
 import {
   useActiveAuthProvider,
   useLink,
@@ -17,21 +19,39 @@ import {
   useTranslate,
 } from '@refinedev/core';
 import Cookies from 'js-cookie';
-import { Loader2 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  TOKEN_KEY,
+  USER_KEY,
+} from '@/providers/auth-provider/auth-provider.client';
 
-type DivPropsType = React.DetailedHTMLProps<
-  React.HTMLAttributes<HTMLDivElement>,
+type DivPropsType = DetailedHTMLProps<
+  HTMLAttributes<HTMLDivElement>,
   HTMLDivElement
 >;
-type FormPropsType = React.DetailedHTMLProps<
-  React.FormHTMLAttributes<HTMLFormElement>,
+type FormPropsType = DetailedHTMLProps<
+  FormHTMLAttributes<HTMLFormElement>,
   HTMLFormElement
 >;
 
 type LoginProps = LoginPageProps<DivPropsType, DivPropsType, FormPropsType>;
 
-export const LoginPage: React.FC<LoginProps> = ({
+const DUMMY_EMAIL = 'demo.retailer@bfarmx.local';
+const DUMMY_PASSWORD = 'Demo@123456';
+const DUMMY_USER = {
+  id: 'offline-retailer',
+  name: 'Offline Retailer',
+  email: DUMMY_EMAIL,
+  role: 'Retailer',
+  avatar: 'https://i.pravatar.cc/150?img=12',
+};
+
+export const LoginPage: FC<LoginProps> = ({
   providers,
   registerLink,
   forgotPasswordLink,
@@ -44,32 +64,56 @@ export const LoginPage: React.FC<LoginProps> = ({
   mutationVariables,
 }) => {
   const routerType = useRouterType();
+  const router = useRouter();
   const Link = useLink();
   const { Link: LegacyLink } = useRouterContext();
 
   const ActiveLink = routerType === 'legacy' ? LegacyLink : Link;
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
 
   const translate = useTranslate();
 
-  useEffect(() => {
-    const rememberedEmail = Cookies.get('remembered_email');
-    const rememberedPassword = Cookies.get('remembered_password');
-
-    if (rememberedEmail && rememberedPassword) {
-      setEmail(rememberedEmail);
-      setPassword(rememberedPassword);
-      setRemember(true);
-    }
-  }, []);
-
   const authProvider = useActiveAuthProvider();
-  const { mutate: login, isLoading } = useLogin<LoginFormTypes>({
+  const { mutate: login } = useLogin<LoginFormTypes>({
     v3LegacyAuthProviderCompatible: Boolean(authProvider?.isLegacy),
   });
+
+  const encodeBase64Url = (value: object) => {
+    return window
+      .btoa(JSON.stringify(value))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+  };
+
+  const createDummyToken = () => {
+    const header = encodeBase64Url({
+      alg: 'HS256',
+      typ: 'JWT',
+    });
+    const payload = encodeBase64Url({
+      exp: 4102444800,
+      role: 'Retailer',
+    });
+
+    return `${header}.${payload}.offline-signature`;
+  };
+
+  const handleOfflineLogin = () => {
+    const token = createDummyToken();
+
+    Cookies.set(TOKEN_KEY, token, {
+      expires: 7,
+      path: '/',
+    });
+    Cookies.set(USER_KEY, JSON.stringify(DUMMY_USER), {
+      expires: 7,
+      path: '/',
+    });
+
+    router.push('/');
+  };
 
   const renderLink = (link: string, text?: string) => {
     return (
@@ -136,7 +180,7 @@ export const LoginPage: React.FC<LoginProps> = ({
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            login({ ...mutationVariables, email, password, remember });
+            handleOfflineLogin();
           }}
           className="space-y-4"
           {...formProps}
@@ -154,8 +198,8 @@ export const LoginPage: React.FC<LoginProps> = ({
               spellCheck={false}
               autoCapitalize="off"
               required
-              value={email}
-              onChange={e => setEmail(e.target.value)}
+              value={DUMMY_EMAIL}
+              readOnly
               className="border-emerald-200 dark:border-emerald-800 focus:ring-emerald-500 dark:focus:ring-emerald-400"
             />
           </div>
@@ -178,8 +222,8 @@ export const LoginPage: React.FC<LoginProps> = ({
               type="password"
               name="password"
               required
-              value={password}
-              onChange={e => setPassword(e.target.value)}
+              value={DUMMY_PASSWORD}
+              readOnly
               className="border-emerald-200 dark:border-emerald-800 focus:ring-emerald-500 dark:focus:ring-emerald-400"
             />
           </div>
@@ -199,18 +243,8 @@ export const LoginPage: React.FC<LoginProps> = ({
           <Button
             type="submit"
             className="w-full bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600"
-            disabled={isLoading}
           >
-            {isLoading
-              ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Đang đăng nhập...
-                  </>
-                )
-              : (
-                  translate('pages.login.signin', 'Đăng nhập')
-                )}
+            {translate('pages.login.signin', 'Đăng nhập')}
           </Button>
         </form>
       )}
