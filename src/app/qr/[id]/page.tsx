@@ -11,25 +11,22 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { useOne } from '@refinedev/core';
-import { Connex } from '@vechain/connex';
 import { motion } from 'framer-motion';
 import { Calendar, Leaf, Package, User } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
-import { use, useEffect, useState } from 'react';
+import {
+  use,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes progress {
-    from { transform: translateX(-100%); }
-    to { transform: translateX(0); }
-  }
-  .animate-progress {
-    animation: progress 2s ease-in-out infinite;
-  }
-`;
-document.head.appendChild(style);
+const DotLottieReact = dynamic(
+  () => import('@lottiefiles/dotlottie-react').then(mod => mod.DotLottieReact),
+  { ssr: false },
+);
 
 type PlanData = {
   planId: string;
@@ -104,6 +101,29 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
   const resolvedParams = use(params);
   const encryptedId = resolvedParams?.id || '';
 
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return;
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes progress {
+        from { transform: translateX(-100%); }
+        to { transform: translateX(0); }
+      }
+      .animate-progress {
+        animation: progress 2s ease-in-out infinite;
+      }
+    `;
+
+    document.head.appendChild(style);
+
+    return () => {
+      style.remove();
+    };
+  }, []);
+
   const { data: plantData, isLoading: isPlantLoading } = useOne({
     resource: 'plants',
     id: plans.planData?.plantId,
@@ -128,7 +148,7 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
     },
   });
 
-  const loadBlockchainData = async () => {
+  const loadBlockchainData = useCallback(async () => {
     try {
       // Decrypt the data using the API
       const response = await fetch(`/api/qr?data=${encryptedId}`, {
@@ -160,6 +180,7 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
         return;
       }
 
+      const { Connex } = await import('@vechain/connex');
       const connex = new Connex({
         node: 'https://testnet.vechain.org',
         network: 'test',
@@ -276,13 +297,13 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
       setError('Có lỗi xảy ra khi tải dữ liệu');
       setLoading(false);
     }
-  };
+  }, [encryptedId]);
 
   useEffect(() => {
     if (encryptedId) {
       loadBlockchainData();
     }
-  }, [encryptedId]);
+  }, [encryptedId, loadBlockchainData]);
 
   if (!resolvedParams?.id) {
     return (
@@ -294,14 +315,14 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
             <Card className="relative border-0 shadow-lg bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
               <CardContent className="p-8 text-center">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
-                  <svg className="w-8 h-8 text-red-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg aria-hidden="true" className="w-8 h-8 text-red-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold text-red-800 dark:text-red-300 mb-2">Mã QR không hợp lệ</h3>
                 <p className="text-gray-600 dark:text-gray-300 mb-4">Vui lòng quét lại mã QR hoặc kiểm tra lại đường dẫn.</p>
                 <Button variant="outline" className="border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg aria-hidden="true" className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
                   Thử lại
@@ -370,7 +391,7 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
             <Card className="relative border-0 shadow-lg bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
               <CardContent className="p-8 text-center">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
-                  <svg className="w-8 h-8 text-red-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg aria-hidden="true" className="w-8 h-8 text-red-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
@@ -378,7 +399,7 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
                 <p className="text-gray-600 dark:text-gray-300 mb-4">{error}</p>
                 <div className="space-y-3">
                   <Button variant="outline" className="border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 w-full">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg aria-hidden="true" className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
                     Thử lại
@@ -403,7 +424,7 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
             <Card className="relative border-0 shadow-lg bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
               <CardContent className="p-8 text-center">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-yellow-100 dark:bg-yellow-900/20 flex items-center justify-center">
-                  <svg className="w-8 h-8 text-yellow-500 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg aria-hidden="true" className="w-8 h-8 text-yellow-500 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
                 </div>
@@ -411,7 +432,7 @@ export default function QRPlanDetailPage({ params }: { params: Promise<{ id: str
                 <p className="text-gray-600 dark:text-gray-300 mb-4">Không thể tìm thấy thông tin kế hoạch từ blockchain.</p>
                 <div className="space-y-3">
                   <Button variant="outline" className="border-yellow-200 dark:border-yellow-800 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 w-full">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg aria-hidden="true" className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
                     Thử lại
