@@ -1,9 +1,9 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { ablyClient } from '@/lib/ablyClient';
 import { liveProvider } from '@refinedev/ably';
 import { Refine } from '@refinedev/core';
+import { ablyClient } from '@/lib/ablyClient';
 
 export function LiveProviderWrapper({ children }: { children: ReactNode }) {
   return (

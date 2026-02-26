@@ -1,7 +1,7 @@
 'use client';
 
-import { cn } from '@/lib/utils';
 import { useEffect, useRef, useState } from 'react';
+import { cn } from '@/lib/utils';
 
 const DEFAULT_RGB = [34, 197, 94];
 

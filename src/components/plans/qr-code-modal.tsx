@@ -1,11 +1,11 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, Clock, Download, Link, RefreshCw } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 type QRCodeModalProps = {
   isOpen: boolean;

@@ -2,9 +2,9 @@
 
 import type { PropsWithChildren } from 'react';
 import type { BasketOrder, Product } from '../types';
-import { OrdersModalContextProvider } from '@/context';
 import { useMany } from '@refinedev/core';
 import { createContext, useMemo, useReducer } from 'react';
+import { OrdersModalContextProvider } from '@/context';
 
 export const BasketContext = createContext<{
   orders: BasketOrder[];
@@ -13,12 +13,12 @@ export const BasketContext = createContext<{
   totalPrice: number;
   products: Product[];
 }>({
-      orders: [],
-      findOrderByProductId: () => undefined,
-      dispatch: () => null,
-      totalPrice: 0,
-      products: [],
-    });
+  orders: [],
+  findOrderByProductId: () => undefined,
+  dispatch: () => null,
+  totalPrice: 0,
+  products: [],
+});
 
 const initialBasket: BasketOrder[] = [];
 

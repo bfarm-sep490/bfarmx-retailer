@@ -1,8 +1,8 @@
-import { ablyClient } from '@/lib/ablyClient';
 import { useGetIdentity, useInvalidate } from '@refinedev/core';
 import { Bell } from 'lucide-react';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
+import { ablyClient } from '@/lib/ablyClient';
 
 type NotificationMessage = {
   id: number;

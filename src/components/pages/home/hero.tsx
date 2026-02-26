@@ -1,10 +1,10 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import * as React from 'react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 type HeroProps = {
   gradient?: boolean;

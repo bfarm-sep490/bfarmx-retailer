@@ -3,9 +3,6 @@
 import type {
   RegisterPageProps,
 } from '@refinedev/core';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   useActiveAuthProvider,
   useLink,
@@ -16,6 +13,9 @@ import {
 } from '@refinedev/core';
 import { Loader2 } from 'lucide-react';
 import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 type DivPropsType = React.DetailedHTMLProps<
   React.HTMLAttributes<HTMLDivElement>,

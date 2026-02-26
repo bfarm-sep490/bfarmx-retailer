@@ -1,18 +1,18 @@
 'use client';
 
 import type { Plant } from '@/types';
-import Loading from '@/app/loading';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useConfiguration } from '@/hooks/useConfiguration';
-import { useCartStore } from '@/store/cart';
 import { useOne } from '@refinedev/core';
 import { CheckCircle2, ChevronLeft, Clock, DollarSign, Minus, Plus } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
+import Loading from '@/app/loading';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useConfiguration } from '@/hooks/useConfiguration';
+import { useCartStore } from '@/store/cart';
 
 export default function PlantDetailPage() {
   const params = useParams();

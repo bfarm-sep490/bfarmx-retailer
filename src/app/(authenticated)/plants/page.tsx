@@ -1,12 +1,12 @@
 'use client';
 
 import type { Plant } from '@/types';
-import Loading from '@/app/loading';
-import { PlantFiltersWrapper } from '@/components/plants/filters/filters-wrapper';
-import { PlantsTable } from '@/components/plants/table';
 import { Separator } from '@radix-ui/react-separator';
 import { useList } from '@refinedev/core';
 import { Suspense } from 'react';
+import Loading from '@/app/loading';
+import { PlantFiltersWrapper } from '@/components/plants/filters/filters-wrapper';
+import { PlantsTable } from '@/components/plants/table';
 
 export default function PlantsPage() {
   const { data: plantData, isLoading } = useList<Plant>({

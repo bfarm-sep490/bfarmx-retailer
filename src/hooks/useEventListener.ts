@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react';
 
 function useEventListener<K extends keyof WindowEventMap>(
   eventName: K,
-  handler: (event: WindowEventMap[K]) => void
+  handler: (event: WindowEventMap[K]) => void,
 ): void;
 function useEventListener<
   K extends keyof HTMLElementEventMap,

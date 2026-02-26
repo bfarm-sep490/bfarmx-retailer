@@ -1,6 +1,6 @@
-import { useConfiguration } from '@/hooks/useConfiguration';
 import { Phone } from 'lucide-react';
 import Image from 'next/image';
+import { useConfiguration } from '@/hooks/useConfiguration';
 import { CircularFooter } from '../ui/circular-footer';
 
 export const Footer = () => {

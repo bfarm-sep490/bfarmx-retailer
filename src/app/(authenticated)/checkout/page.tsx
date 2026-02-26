@@ -1,7 +1,18 @@
 'use client';
 
-import type { IIdentity } from '@/types';
 import type { BaseRecord, HttpError } from '@refinedev/core';
+import type { IIdentity } from '@/types';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useCreate, useGetIdentity } from '@refinedev/core';
+import { format } from 'date-fns';
+import { vi } from 'date-fns/locale';
+import { CalendarDays, CalendarIcon, CheckCircle2, Clock, Info, Loader2, Minus, Package, Phone, Plus, User, X } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
 import { ChevronLeftIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -10,22 +21,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
 import { useConfiguration } from '@/hooks/useConfiguration';
 import { usePackagingTypes } from '@/hooks/usePackagingTypes';
 import { cn } from '@/lib/utils';
 import { useCartStore } from '@/store/cart';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useCreate, useGetIdentity } from '@refinedev/core';
-import { format } from 'date-fns';
-import { vi } from 'date-fns/locale';
-import { CalendarDays, CalendarIcon, CheckCircle2, Clock, Info, Loader2, Minus, Package, Phone, Plus, User, X } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Vui lòng nhập họ tên'),

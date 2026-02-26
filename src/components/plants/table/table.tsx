@@ -1,15 +1,15 @@
 'use client';
 
-import type { Plant } from '@/types';
 import type { HttpError, useTableProps } from '@refinedev/core';
 import type { ColumnDef } from '@tanstack/react-table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import type { Plant } from '@/types';
 import { useTable } from '@refinedev/react-table';
 import { flexRender } from '@tanstack/react-table';
 import { ChevronLeft, ChevronRight, Clock, DollarSign, Inbox } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { AddToCartPopup } from '../add-to-cart-popup';
 
 type Props = {

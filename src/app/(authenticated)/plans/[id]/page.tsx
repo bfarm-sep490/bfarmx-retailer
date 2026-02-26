@@ -1,12 +1,12 @@
 'use client';
 
 import type { IPlan } from '@/types';
-import { ChevronLeftIcon } from '@/components/icons';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { useOne } from '@refinedev/core';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { ChevronLeftIcon } from '@/components/icons';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 export default function PlanDetailPage() {
   const params = useParams();
